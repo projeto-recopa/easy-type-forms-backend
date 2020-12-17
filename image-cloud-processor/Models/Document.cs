@@ -23,6 +23,8 @@ namespace image_cloud_processor.Models
         /// </summary>
         public StatusDocumento Status { get; set; }
 
+        public ObjectId attachmentId { get; set; }
+
         /// <summary>
         /// Extração original
         /// </summary>

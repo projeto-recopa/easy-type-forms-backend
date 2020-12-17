@@ -8,6 +8,7 @@ using Google.Cloud.Vision.V1;
 using Grpc.Auth;
 using image_cloud_processor.Models;
 using image_cloud_processor.Repository;
+using image_cloud_processor.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -22,43 +23,24 @@ namespace image_cloud_processor.Controllers
     public class DocumentController : ControllerBase
     {
         private readonly ILogger<UploadController> _logger;
+        private readonly DocumentService _documentService;
         private readonly IDocumentosRepository _documentosRepository;
+
         public DocumentController(ILogger<UploadController> logger,
             IDocumentosRepository documentosRepository,
-            IConfiguration config)
+            DocumentService documentService)
         {
             _logger = logger;
+            _documentService = documentService;
             _documentosRepository = documentosRepository;
 
         }
-        //public async Task<IActionResult> OnPostUploadAsync(List<IFormFile> files)
-        //{
-        //    long size = files.Sum(f => f.Length);
-
-        //    foreach (var formFile in files)
-        //    {
-        //        if (formFile.Length > 0)
-        //        {
-        //            var filePath = Path.GetTempFileName();
-
-        //            using (var stream = System.IO.File.Create(filePath))
-        //            {
-        //                await formFile.CopyToAsync(stream);
-        //            }
-        //        }
-        //    }
-
-        //    // Process uploaded files
-        //    // Don't rely on or trust the FileName property without validation.
-
-        //    return Ok(new { count = files.Count, size });
-        //}
 
         // GET: api/<DocumentController>
         [HttpGet]
         public IEnumerable<Document> Get()
         {
-            return _documentosRepository.ListarDocumentos< Document>();
+            return _documentService.ListarDocumentos();
         }
 
         // GET api/<DocumentController>/5
