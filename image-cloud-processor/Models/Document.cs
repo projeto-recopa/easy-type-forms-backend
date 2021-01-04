@@ -1,8 +1,13 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using image_cloud_processor.Utils;
+using MongoDB.Bson.Serialization.Options;
 
 namespace image_cloud_processor.Models
 {
@@ -10,9 +15,13 @@ namespace image_cloud_processor.Models
     {
         UPLOAD = 0, PROCESSADO, EDICAO, CONCLUIDO, TRANSMITIDO
     }
+
     public class Document
     {
-        public ObjectId _id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+
         /// <summary>
         /// Usuário que fez a importação
         /// </summary>
@@ -23,12 +32,17 @@ namespace image_cloud_processor.Models
         /// </summary>
         public StatusDocumento Status { get; set; }
 
-        public ObjectId attachmentId { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string AttachmentId { get; set; }
+
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string EditedId { get; set; }
 
         /// <summary>
         /// Extração original
         /// </summary>
-        public string[] DadosOriginais { get; set; }
+        [JsonIgnore]
+        public Bloco[] DadosOriginais { get; set; }
         /// <summary>
         /// Identificador do fomrmulário
         /// </summary>
@@ -59,9 +73,9 @@ namespace image_cloud_processor.Models
 
         public string Passaporte { get; set; }
 
+        public string CEP { get; set; }
 
         // Dados clinicos epidemiologicos
-        public string CEP { get; set; }
         public string UFResidencia { get; set; }
         public string MunicipioResidencia { get; set; }
         public string Logradouro { get; set; }
@@ -70,6 +84,10 @@ namespace image_cloud_processor.Models
         public string Bairro { get; set; }
         public string Telefone { get; set; }
 
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
+        public Dictionary<DocumentField, string> CropedFields { get; internal set; }
+
+        public Sintomas Sintomas { get; set; }
         // TODO: Pendente incluiro campos do formulário
     }
 }

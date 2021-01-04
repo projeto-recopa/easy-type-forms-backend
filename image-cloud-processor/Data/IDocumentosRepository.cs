@@ -4,14 +4,16 @@ using System.IO;
 
 namespace image_cloud_processor.Repository
 {
-    public interface IDocumentosRepository
+    public interface IDocumentosRepository<T>
     {
-        T ObterDocumento<T>(string codigo);
+        T ObterDocumento(string codigo);
+        T ObterDocumentoById(MongoDB.Bson.ObjectId id);
 
-        T SalvarOuAtualizarDocumento<T>(T documento);
-        IEnumerable<T> ListarDocumentos<T>();
+        T SalvarOuAtualizarDocumento(T documento);
+        IEnumerable<T> ListarDocumentos();
 
         MongoDB.Bson.ObjectId AttachFile(byte[] source);
         byte[] DownloadFile(MongoDB.Bson.ObjectId id);
+        IEnumerable<T> ListarDocumentos(StatusDocumento status);
     }
 }

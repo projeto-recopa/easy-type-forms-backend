@@ -12,9 +12,9 @@ namespace image_cloud_processor.Service
     public class DocumentService
     {
         private readonly ILogger<DocumentService> _logger;
-        private readonly IDocumentosRepository _documentosRepository;
+        private readonly IDocumentosRepository<Document> _documentosRepository;
         public DocumentService(ILogger<DocumentService> logger,
-            IDocumentosRepository documentosRepository)
+            IDocumentosRepository<Document> documentosRepository)
         {
             _logger = logger;
             _documentosRepository = documentosRepository;
@@ -22,7 +22,13 @@ namespace image_cloud_processor.Service
 
         public IEnumerable<Document> ListarDocumentos()
         {
-            return _documentosRepository.ListarDocumentos<Document>();
+            return _documentosRepository.ListarDocumentos();
+        }
+
+
+        public IEnumerable<Document> ListarDocumentos(StatusDocumento status)
+        {
+            return _documentosRepository.ListarDocumentos(status);
         }
     }
 }

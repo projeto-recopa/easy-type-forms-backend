@@ -24,10 +24,10 @@ namespace image_cloud_processor.Controllers
     {
         private readonly ILogger<UploadController> _logger;
         private readonly DocumentService _documentService;
-        private readonly IDocumentosRepository _documentosRepository;
+        private readonly IDocumentosRepository<Document> _documentosRepository;
 
         public DocumentController(ILogger<UploadController> logger,
-            IDocumentosRepository documentosRepository,
+            IDocumentosRepository<Document> documentosRepository,
             DocumentService documentService)
         {
             _logger = logger;
@@ -38,8 +38,17 @@ namespace image_cloud_processor.Controllers
 
         // GET: api/<DocumentController>
         [HttpGet]
-        public IEnumerable<Document> Get()
+        public IEnumerable<Document> Get([FromQuery(Name = "status")] int status = -1)
         {
+            if (status > -1)
+            {
+                if (!Enum.IsDefined(typeof(StatusDocumento), status))
+                {
+                    throw new ArgumentException("Parâmetro inválido", "Status do documento");
+                }
+                return _documentService.ListarDocumentos((StatusDocumento)status);
+
+            }
             return _documentService.ListarDocumentos();
         }
 
@@ -47,35 +56,14 @@ namespace image_cloud_processor.Controllers
         [HttpGet("{id}")]
         public Document Get(string id)
         {
-            return _documentosRepository.ObterDocumento<Document>(id);
+            return _documentosRepository.ObterDocumento(id);
         }
 
         [HttpGet("/process/{id}")]
         public string Process(int id)
         {
-            /*
-                        var jsonpah = @"C:\Users\a.de.melo.pinheiro\Documents\CESAR School\projeto-recopa\api-auth\API Project-64e82001381f.json";
-                        //Authenticate to the service by using Service Account
-                        var credential = GoogleCredential.FromFile(jsonpah).CreateScoped(ImageAnnotatorClient.DefaultScopes);
-                        var channel = new Grpc.Core.Channel(ImageAnnotatorClient.DefaultEndpoint.ToString(), credential.ToChannelCredentials());
-            */
-
-            var client = ImageAnnotatorClient.Create();
-            var filePath = @"C:\dev\1598451609587.gray.png";
-            // Load an image from a local file.
-            var image = Image.FromFile(filePath);
-            var response = client.DetectDocumentText(image);
-            foreach (var page in response.Pages)
-            {
-                foreach (var block in page.Blocks)
-                {
-                    foreach (var paragraph in block.Paragraphs)
-                    {
-                        Console.WriteLine(string.Join("\n", paragraph.Words));
-                    }
-                }
-            }
-            return response.Text;
+            // TODO: Mover para cloud image processor 
+            return "Not implemented;";
         }
 
 
@@ -84,23 +72,6 @@ namespace image_cloud_processor.Controllers
         public void Post([FromBody] Document value)
         {
             _documentosRepository.SalvarOuAtualizarDocumento(value);
-            /*
-            var filePath = @"C:\Users\a.de.melo.pinheiro\Documents\CESAR School\projeto-recopa\poc-processamento-cloudvision\preprocessamento;";
-            // Load an image from a local file.
-            var image = Image.FromFile(filePath);
-            var client = ImageAnnotatorClient.Create();
-            var response = client.DetectDocumentText(image);
-            foreach (var page in response.Pages)
-            {
-                foreach (var block in page.Blocks)
-                {
-                    foreach (var paragraph in block.Paragraphs)
-                    {
-                        Console.WriteLine(string.Join("\n", paragraph.Words));
-                    }
-                }
-            }
-            */
         }
 
         // PUT api/<DocumentController>/5

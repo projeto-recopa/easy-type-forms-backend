@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using image_cloud_processor.Filters;
@@ -72,7 +73,7 @@ namespace image_cloud_processor.Controllers
                 _defaultFormOptions.MultipartBoundaryLengthLimit);
             var reader = new MultipartReader(boundary, HttpContext.Request.Body);
             var section = await reader.ReadNextSectionAsync();
-            var result = MongoDB.Bson.ObjectId.Empty;
+            var result = MongoDB.Bson.ObjectId.Empty.ToString();
 
             while (section != null)
             {
@@ -132,28 +133,19 @@ namespace image_cloud_processor.Controllers
                 section = await reader.ReadNextSectionAsync();
             }
 
-            return Created(nameof(UploadController), result);
+            return Created(nameof(UploadController), new { Id = result });
         }
         #endregion
 
         // GET api/<DocumentController>/5
         [HttpGet("download/{id}")]
-        public Stream Get(MongoDB.Bson.ObjectId id)
+        public ActionResult Get(string id, [FromQuery] int edit = 0)
         {
+            byte[] bytesInStream = this._uploadService.DownloadImage(id, edit);
 
-            //byte[] bytesInStream = memoryStream.ToArray(); // simpler way of converting to array
-            //TextWriter textWriter = new StreamWriter(memoryStream);
-            //textWriter.WriteLine("Something");
-            //textWriter.Flush(); // added this line
-            //memoryStream.Close();
+            var memory = new MemoryStream(bytesInStream);
+            return File(memory,  "image/png", $"{id}.png");
 
-            //Response.Clear();
-            //Response.ContentType = "application/force-download";
-            //Response.AddHeader("content-disposition", "attachment;    filename=name_you_file.xls");
-            //Response.BinaryWrite(bytesInStream);
-            //Response.End();
-
-            return null;
         }
         private static Encoding GetEncoding(MultipartSection section)
         {

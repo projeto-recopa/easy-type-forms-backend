@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using image_cloud_processor.Models;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using System;
@@ -7,10 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
+using Document = image_cloud_processor.Models.Document;
 
 namespace image_cloud_processor.Repository
 {
-    public class DocumentosRepository : IDocumentosRepository
+    public class DocumentosRepository : IDocumentosRepository<Document>
     {
         private IConfiguration _configuration;
         private IMongoDatabase getDatabase()
@@ -35,40 +37,68 @@ namespace image_cloud_processor.Repository
             _configuration = config;
         }
 
-        public IEnumerable<T> ListarDocumentos<T>()
+        public IEnumerable<Document> ListarDocumentos()
         {
             IMongoDatabase db = getDatabase();
-            var filter = Builders<T>.Filter.Empty;
+            var filter = Builders<Document>.Filter.Empty;
 
-            return db.GetCollection<T>("Forms").Find(filter).ToEnumerable<T>();
+            return db.GetCollection<Document>("Forms").Find(filter).ToEnumerable<Document>();
         }
 
-        public T ObterDocumento<T>(string codigo)
+        public IEnumerable<Document> ListarDocumentos(StatusDocumento status)
+        {
+            IMongoDatabase db = getDatabase();
+            var filter = Builders<Document>.Filter.Eq(x => x.Status, status);
+
+            return db.GetCollection<Document>("Forms").Find(filter).ToEnumerable<Document>();
+        }
+
+        public Document ObterDocumento(string codigo)
         {
             IMongoDatabase db = getDatabase();
 
-            var filter = Builders<T>.Filter.Eq("Codigo", codigo);
+            var filter = Builders<Document>.Filter.Eq("Codigo", codigo);
 
-            return db.GetCollection<T>("Forms")
+            return db.GetCollection<Document>("Forms")
                 .Find(filter)
                 .FirstOrDefault();
         }
 
-        public T SalvarOuAtualizarDocumento<T>(T documento)
+        public Document SalvarOuAtualizarDocumento(Document documento)
         {
-            MongoClient client = new MongoClient(
-                _configuration.GetConnectionString("MongoDB"));
-            IMongoDatabase db = client.GetDatabase("et_forms");
+            try
+            {
+                MongoClient client = new MongoClient(
+                       _configuration.GetConnectionString("MongoDB"));
+                IMongoDatabase db = client.GetDatabase("et_forms");
 
-            db.GetCollection<T>("Forms").InsertOne(documento);
-            
-            return documento;
+                db.GetCollection<Document>("Forms").InsertOne(documento);
+
+                return documento;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
 
         public byte[] DownloadFile(MongoDB.Bson.ObjectId id)
         {
-            //return await bucket.DownloadAsBytesAsync(id);
-            return null;
+            var bucket = new GridFSBucket(getDatabase());
+            var file = bucket.DownloadAsBytes(id);
+            return file;
+        }
+
+        public Document ObterDocumentoById(MongoDB.Bson.ObjectId id)
+        {
+            IMongoDatabase db = getDatabase();
+
+            var filter = Builders<Document>.Filter.Eq("_id", id);
+
+            return db.GetCollection<Document>("Forms")
+                .Find(filter)
+                .FirstOrDefault();
         }
     }
 }

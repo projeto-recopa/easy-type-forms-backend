@@ -1,17 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using image_cloud_processor.MLModels;
+using image_cloud_processor.Models;
 using image_cloud_processor.Repository;
 using image_cloud_processor.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ML;
 
 namespace image_cloud_processor
 {
@@ -23,11 +21,18 @@ namespace image_cloud_processor
         {
             Configuration = configuration;
 
+
             // TODO: Put this path in appsettings
-            string credential_path = @"C:\Users\a.de.melo.pinheiro\Documents\CESAR School\projeto-recopa\api-auth\API Project-64e82001381f.json";
+            var googleCredential = System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
+            if (string.IsNullOrEmpty(googleCredential))
+            {
+                Console.WriteLine("Google Credentials not SET - Loading for Dev Enviroment");
+                string credential_path = @"C:\Users\a.de.melo.pinheiro\Documents\CESAR School\projeto-recopa\api-auth\API Project-64e82001381f.json";
+                System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
+            }
+            googleCredential = System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
 
-            System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
-
+            Console.WriteLine("Google Credentials set:" + googleCredential);
         }
 
         public IConfiguration Configuration { get; }
@@ -48,13 +53,28 @@ namespace image_cloud_processor
                                   });
             });
 
-            services.AddSingleton<IDocumentosRepository, DocumentosRepository>();
+            services.AddSingleton<IDocumentosRepository<Document>, DocumentosRepository>();
             services.AddControllers();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen();
 
+            services.AddTransient<UploadService>();
+            services.AddTransient<ImageService>();
+            services.AddTransient<PredictionMLService>();
+
             services.AddTransient<DocumentService>();
             services.AddTransient<CloudImageProcessor>();
+
+            services
+            .AddPredictionEnginePool<ModelInput, ModelOutput>()
+            //.FromFile(modelName: "", filePath: "")
+            .FromFile(modelName: "Field_SexoModel", filePath: "SexoMLModel.zip")
+            .FromFile(modelName: "Field_SintomaFebreModel", filePath: "SintomaFebreMLModel.zip");
+            //.FromUri(
+            //    modelName: "Field_SexoModel",
+            //    uri: "https://github.com/dotnet/samples/raw/master/machine-learning/models/sentimentanalysis/sentiment_model.zip",
+            //    period: TimeSpan.FromMinutes(1));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
