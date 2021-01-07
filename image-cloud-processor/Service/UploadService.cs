@@ -145,13 +145,27 @@ namespace image_cloud_processor.Service
             //Regex regex = new Regex(pattern, options);
             //Match match = regex.Match(ExtractFullText(dadosOriginais));
 
+            string patternUFMunicipioNot = @"/UF\sde\snotificação\s:\sMunic.pio\sde\sNotifica..o\s*:\s?(?<UFNot>\w(I|\|)\w)\s*(?<MunicipioNot>\w*)\s?";
+            string patternNomeMae = @"Nome\sCompleto\sda\sM.e\s*:\s?(?<NomeMae>(\w*\s)*)\s?Data";
             string patternCPF = @"CPF\s?:\s?(?<CPF>\d*)\s?";
             string patternCNS = @"CNS\s*:\s*(?<CNS>[\d\s?]*)";
             string patternCNomeCompleto = @"Nome\s?Completo\s?:\s?(?<Nome>[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F\s]+)\s?(?<NomeMae>Nome\s?)";
+            
+            string patternUFRes = @"Estado\sde\sresid.ncia\s:\s(?<UFRes>\w(I|\|)\w)\s?";
+            string patternLogradouro = @"N.mero\s:\sBairro\s:\s(?<Logradouro>[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F\s]+\s)";
 
-            documento.CPF = this.ExtractFieldByRegex(fullText, patternCPF, "CPF");
-            documento.CNS = this.ExtractFieldByRegex(fullText, patternCNS, "CNS");
+            documento.UF = removeNIndexCharacters(this.ExtractFieldByRegex(fullText, patternUFMunicipioNot, "UFNot"));
+            documento.MunicipioNotificao = this.ExtractFieldByRegex(fullText, patternUFMunicipioNot, "MunicipioNot");
+
+            documento.UF = removeNIndexCharacters(this.ExtractFieldByRegex(fullText, patternUFRes, "UFRes"));
+            documento.Logradouro = this.ExtractFieldByRegex(fullText, patternLogradouro, "Logradouro");
+
+            documento.CPF = removeNIndexCharacters(this.ExtractFieldByRegex(fullText, patternCPF, "CPF"));
+            documento.CNS = removeNIndexCharacters(this.ExtractFieldByRegex(fullText, patternCNS, "CNS"));
             documento.NomeCompleto = this.ExtractFieldByRegex(fullText, patternCNomeCompleto, "Nome");
+            documento.NomeCompletoMae = this.ExtractFieldByRegex(fullText, patternNomeMae, "NomeMae");
+
+
             //documento.CPF = match.Groups["CPF"].Value;
             //documento.CNS = match.Groups["CNS"].Value;
             //documento.NomeCompleto = match.Groups["Nome"].Value;
@@ -162,13 +176,56 @@ namespace image_cloud_processor.Service
             //documento.UFResidencia = match.Groups["EstadoResidencia"].Value;
             //documento.MunicipioResidencia = match.Groups["MunicipioRes"].Value;
 
-            AplicarModelosML(documento, DocumentField.SEXO);
+            var resultSexo = AplicarModelosML(documento, DocumentField.SEXO, "Field_SexoModel");
+            if (resultSexo != null)
+            {
+                documento.Sexo = resultSexo.Prediction;
+            }
+
+            var resultTeste = AplicarModelosML(documento, DocumentField.RESULTADO_TESTE, "Field_ResultadoTesteModel");
+            if (resultTeste != null)
+            {
+                documento.ResultadoTeste = resultTeste.Prediction;
+            }
+
             AplicarModelosSintomaFebreML(documento, DocumentField.SINTOMAS);
 
             documento.Status = StatusDocumento.PROCESSADO;
         }
 
-        private void AplicarModelosML(Document documento, DocumentField field)
+        static string removeNIndexCharacters(string s, bool odd = true)
+        {
+
+            // Stores the resultant string  
+            string new_string = "";
+
+            for (int i = 0; i < s.Length; i++)
+            {
+
+                // If the current index is odd (or even) 
+                // Skip the character  
+                if (odd)
+                {
+                    if (i % 2 == 1)
+                        continue;
+                }
+                else
+                {
+                    if (i % 2 == 0)
+                        continue;
+                }
+
+
+                // Otherwise, append the  
+                // character  
+                new_string += s[i];
+            }
+
+            // Return the modified string  
+            return new_string;
+        }
+
+        private MLModels.ModelOutput AplicarModelosML(Document documento, DocumentField field, string model)
         {
             if (documento.CropedFields.ContainsKey(field))
             {
@@ -187,12 +244,14 @@ namespace image_cloud_processor.Service
                 var result = this._predictionMLService.Predict(new MLModels.ModelInput
                 {
                     ImageSource = path
-                });
-                if (result != null)
-                {
-                    documento.Sexo = result.Prediction;
-                }
+                }, model);
+                return result;
+                //if (result != null)
+                //{
+                //    documento.Sexo = result.Prediction;
+                //}
             }
+            return null;
         }
         private void AplicarModelosSintomaFebreML(Document documento, DocumentField field)
         {

@@ -68,12 +68,20 @@ namespace image_cloud_processor
             services
             .AddPredictionEnginePool<ModelInput, ModelOutput>()
             //.FromFile(modelName: "", filePath: "")
-            .FromFile(modelName: "Field_SexoModel", filePath: "SexoMLModel.zip")
-            .FromFile(modelName: "Field_SintomaFebreModel", filePath: "SintomaFebreMLModel.zip");
-            //.FromUri(
-            //    modelName: "Field_SexoModel",
-            //    uri: "https://github.com/dotnet/samples/raw/master/machine-learning/models/sentimentanalysis/sentiment_model.zip",
-            //    period: TimeSpan.FromMinutes(1));
+            //.FromFile(modelName: "Field_SexoModel", filePath: "SexoMLModel.zip")
+            //.FromFile(modelName: "Field_SintomaFebreModel", filePath: "SintomaFebreMLModel.zip");
+            .FromUri(
+                modelName: "Field_ResultadoTesteModel",
+                uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/ResultadoTesteMLModel.zip",
+                period: TimeSpan.FromMinutes(1))
+            .FromUri(
+                modelName: "Field_SexoModel",
+                uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SexoMLModel.zip",
+                period: TimeSpan.FromMinutes(1))
+            .FromUri(
+                modelName: "Field_SintomaFebreModel",
+                uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SintomaFebreMLModel.zip",
+                period: TimeSpan.FromMinutes(1));
 
         }
 

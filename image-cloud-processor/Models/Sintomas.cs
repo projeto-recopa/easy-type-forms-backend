@@ -7,10 +7,10 @@ namespace image_cloud_processor.Models
 {
     public class Sintomas
     {
-        public bool Febre { get; set; }
-        public bool Tosse { get; set; }
-        public bool DorGarganta { get; set; }
-        public bool Dispneia { get; set; }
-        public bool Outros { get; set; }
+        public bool? Febre { get; set; }
+        public bool? Tosse { get; set; }
+        public bool? DorGarganta { get; set; }
+        public bool? Dispneia { get; set; }
+        public bool? Outros { get; set; }
     }
 }

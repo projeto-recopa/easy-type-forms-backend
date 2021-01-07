@@ -57,7 +57,7 @@ namespace image_cloud_processor.Repository
         {
             IMongoDatabase db = getDatabase();
 
-            var filter = Builders<Document>.Filter.Eq("Codigo", codigo);
+            var filter = Builders<Document>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(codigo));
 
             return db.GetCollection<Document>("Forms")
                 .Find(filter)

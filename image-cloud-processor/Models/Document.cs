@@ -84,10 +84,12 @@ namespace image_cloud_processor.Models
         public string Bairro { get; set; }
         public string Telefone { get; set; }
 
+        [JsonIgnore]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
         public Dictionary<DocumentField, string> CropedFields { get; internal set; }
 
         public Sintomas Sintomas { get; set; }
         // TODO: Pendente incluiro campos do formulário
+        public string ResultadoTeste { get; set; }
     }
 }
