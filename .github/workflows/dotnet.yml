@@ -42,12 +42,14 @@ jobs:
         login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
-    - run: |
+    - name: 'Build and Push: document-ml-predict'
+      run: |
         cd document-ml-predict
         docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/document-ml-predict:${{ github.sha }}
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/document-ml-predict:${{ github.sha }}
         
-    - run: |
-        cd ../image-cloud-processor
+    - name: 'Build and Push: image-cloud-processor'
+      run: |
+        cd image-cloud-processor
         docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/image-cloud-processor:${{ github.sha }}
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/image-cloud-processor:${{ github.sha }}
