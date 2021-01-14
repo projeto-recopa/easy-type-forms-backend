@@ -1,4 +1,5 @@
 using System;
+using image_cloud_processor.Middlware;
 using image_cloud_processor.MLModels;
 using image_cloud_processor.Models;
 using image_cloud_processor.Repository;
@@ -69,6 +70,7 @@ namespace image_cloud_processor
 
             services.AddTransient<DocumentService>();
             services.AddTransient<CloudImageProcessor>();
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
 
             //services
             //.AddPredictionEnginePool<ModelInput, ModelOutput>()
@@ -88,6 +90,7 @@ namespace image_cloud_processor
             //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SintomaFebreMLModel.zip",
             //    period: TimeSpan.FromMinutes(1));
 
+            services.AddGlobalExceptionHandlerMiddleware();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -123,6 +126,9 @@ namespace image_cloud_processor
             {
                 endpoints.MapControllers();
             });
+
+
+            app.UseGlobalExceptionHandlerMiddleware();
         }
     }
 }

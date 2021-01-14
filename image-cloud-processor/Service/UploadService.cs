@@ -54,94 +54,102 @@ namespace image_cloud_processor.Service
 
         public string CreateDocumentFromFile(byte[] streamedFileContent)
         {
-            var client = ImageAnnotatorClient.Create();
-
-
-            var image = Image.FromBytes(streamedFileContent);
-            var response = client.DetectDocumentText(image);
-
-            //Graphics.FromImage()
-
-            var blocos = new List<Bloco>();
-            var boxesWords = new List<Tuple<System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF>>();
-            var boxesParagraph = new List<Tuple<System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF>>();
-            var boxesBlock = new List<Tuple<System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF>>();
-
-            var cropBoxes = new CropBoxes();
-
-
-            foreach (var page in response.Pages)
+            try
             {
-                foreach (var block in page.Blocks)
-                {
-                    boxesBlock.Add(BoundigBoxToPoints(block.BoundingBox));
-                    var bloco = new Bloco();
+                var client = ImageAnnotatorClient.Create();
 
-                    foreach (var paragraph in block.Paragraphs)
+
+                var image = Image.FromBytes(streamedFileContent);
+                var response = client.DetectDocumentText(image);
+
+                //Graphics.FromImage()
+
+                var blocos = new List<Bloco>();
+                var boxesWords = new List<Tuple<System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF>>();
+                var boxesParagraph = new List<Tuple<System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF>>();
+                var boxesBlock = new List<Tuple<System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF>>();
+
+                var cropBoxes = new CropBoxes();
+
+
+                foreach (var page in response.Pages)
+                {
+                    foreach (var block in page.Blocks)
                     {
-                        boxesParagraph.Add(BoundigBoxToPoints(paragraph.BoundingBox));
-                        var paragrafo = new Paragrafo();
+                        boxesBlock.Add(BoundigBoxToPoints(block.BoundingBox));
+                        var bloco = new Bloco();
 
-                        foreach (var word in paragraph.Words)
+                        foreach (var paragraph in block.Paragraphs)
                         {
-                            var wordBox = BoundigBoxToPoints(word.BoundingBox);
-                            boxesWords.Add(wordBox);
-                            string palavra = string.Join(string.Empty, word.Symbols.Select(x => x.Text));
-                            cropBoxes.Push(palavra, wordBox);
+                            boxesParagraph.Add(BoundigBoxToPoints(paragraph.BoundingBox));
+                            var paragrafo = new Paragrafo();
 
-                            paragrafo.Palavras.Add(palavra);
+                            foreach (var word in paragraph.Words)
+                            {
+                                var wordBox = BoundigBoxToPoints(word.BoundingBox);
+                                boxesWords.Add(wordBox);
+                                string palavra = string.Join(string.Empty, word.Symbols.Select(x => x.Text));
+                                cropBoxes.Push(palavra, wordBox);
 
+                                paragrafo.Palavras.Add(palavra);
+
+                            }
+
+                            bloco.Paragrafos.Add(paragrafo);
                         }
-
-                        bloco.Paragrafos.Add(paragrafo);
+                        blocos.Add(bloco);
                     }
-                    blocos.Add(bloco);
                 }
-            }
 
-            var imageEdit = streamedFileContent;
-            //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesWords, System.Drawing.Color.Red);
-            //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesParagraph, System.Drawing.Color.Purple);
-            //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesBlock, System.Drawing.Color.DarkOliveGreen);
+                var imageEdit = streamedFileContent;
+                //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesWords, System.Drawing.Color.Red);
+                //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesParagraph, System.Drawing.Color.Purple);
+                //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesBlock, System.Drawing.Color.DarkOliveGreen);
 
-            // Salva a imagem no banco
-            var attachmentID = this._documentosRepository.AttachFile(streamedFileContent);
-            var editID = this._documentosRepository.AttachFile(imageEdit);
+                // Salva a imagem no banco
+                var attachmentID = this._documentosRepository.AttachFile(streamedFileContent);
+                var editID = this._documentosRepository.AttachFile(imageEdit);
 
-            //var cropedSexo = sexoBox != null ? _documentosRepository.AttachFile(_imageService.CropImage(imageEdit, sexoBox, 8, 4)) : MongoDB.Bson.ObjectId.Empty;
-            var cropedImages = new Dictionary<DocumentField, string>();
-            foreach (var field in cropBoxes.GetBoxes())
-            {
-                if (!cropedImages.ContainsKey(field))
+                //var cropedSexo = sexoBox != null ? _documentosRepository.AttachFile(_imageService.CropImage(imageEdit, sexoBox, 8, 4)) : MongoDB.Bson.ObjectId.Empty;
+                var cropedImages = new Dictionary<DocumentField, string>();
+                foreach (var field in cropBoxes.GetBoxes())
                 {
-                    var dimension = CropBoxes.GetFieldDimension(field);
+                    if (!cropedImages.ContainsKey(field))
+                    {
+                        var dimension = CropBoxes.GetFieldDimension(field);
 
-                    var imageId = _documentosRepository.AttachFile(_imageService.CropImage(imageEdit, cropBoxes.GetBox(field), dimension.Item1, dimension.Item2));
+                        var imageId = _documentosRepository.AttachFile(_imageService.CropImage(imageEdit, cropBoxes.GetBox(field), dimension.Item1, dimension.Item2));
 
-                    cropedImages.Add(field, imageId.ToString());
+                        cropedImages.Add(field, imageId.ToString());
+                    }
                 }
+
+
+                var doc = new Document
+                {
+                    Status = StatusDocumento.UPLOAD,
+                    AttachmentId = attachmentID.ToString(),
+                    EditedId = editID.ToString(),
+                    DadosOriginais = blocos.ToArray(),
+                    CropedFields = cropedImages
+                };
+
+                ProcessarDadosOriginaisAsync(doc);
+
+                // Cria documento
+                doc = _documentosRepository.SalvarOuAtualizarDocumento(doc);
+
+                ProcessarDadosML(doc);
+                doc = _documentosRepository.AtualizarDocumentoAsync(doc).Result;
+
+                if (doc != null && doc.Id != null) return doc.Id;
+                return ObjectId.Empty.ToString();
             }
-
-
-            var doc = new Document
+            catch (Exception ex)
             {
-                Status = StatusDocumento.UPLOAD,
-                AttachmentId = attachmentID.ToString(),
-                EditedId = editID.ToString(),
-                DadosOriginais = blocos.ToArray(),
-                CropedFields = cropedImages
-            };
-
-            ProcessarDadosOriginaisAsync(doc);
-
-            // Cria documento
-            doc = _documentosRepository.SalvarOuAtualizarDocumento(doc);
-
-            ProcessarDadosML(doc);
-            doc = _documentosRepository.AtualizarDocumentoAsync(doc).Result;
-
-            if (doc != null && doc.Id != null) return doc.Id;
-            return ObjectId.Empty.ToString();
+                _logger.LogError(ex, ex.Message);
+                throw;
+            }
         }
 
         public void ProcessarDadosML(Document documento)

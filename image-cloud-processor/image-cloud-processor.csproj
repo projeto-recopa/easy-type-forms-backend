@@ -5,6 +5,7 @@
     <RootNamespace>image_cloud_processor</RootNamespace>
     <UserSecretsId>96cb8632-0178-4959-9c55-b81c6331a23f</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <ApplicationInsightsResourceId>/subscriptions/c27d0d62-601c-4a06-929f-0678c62d71af/resourceGroups/Recopa-Back/providers/microsoft.insights/components/predictions-ml</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Vision.V1" Version="2.1.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.14.0" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="1.5.4" />
     <PackageReference Include="Microsoft.ML" Version="1.5.4" />
     <PackageReference Include="Microsoft.ML.ImageAnalytics" Version="1.5.4" />
