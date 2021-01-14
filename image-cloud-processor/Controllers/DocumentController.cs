@@ -56,7 +56,8 @@ namespace image_cloud_processor.Controllers
         [HttpGet("{id}")]
         public Document Get(string id)
         {
-            return _documentosRepository.ObterDocumento(id);
+            //return _documentosRepository.ObterDocumento(id);
+            return _documentService.Get(id);
         }
 
         [HttpGet("/process/{id}")]
@@ -69,15 +70,16 @@ namespace image_cloud_processor.Controllers
 
         // POST api/<DocumentController>
         [HttpPost]
-        public void Post([FromBody] Document value)
+        public Document Post([FromBody] Document value)
         {
-            _documentosRepository.SalvarOuAtualizarDocumento(value);
+            return _documentService.SalvarOuAtualizarDocumento(value);
         }
 
         // PUT api/<DocumentController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<Document> PutAsync([FromBody] Document value)
         {
+            return await _documentService.AtualizarDocumentoAsync(value);
         }
 
         // DELETE api/<DocumentController>/5

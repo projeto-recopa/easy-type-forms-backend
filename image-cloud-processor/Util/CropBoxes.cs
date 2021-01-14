@@ -1,32 +1,33 @@
-﻿using System;
+﻿using recopa_types;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
 namespace image_cloud_processor.Utils
 {
-    public enum DocumentField
-    {
-        NULL = 0,
-        TEM_CPF,
-        ESTRANGEIRO,
-        PROFISSIONAL_SAUDE,
-        PROFISSIONAL_SEGURANCA,
-        SEXO,
-        RACA,
-        //RACA_BRANCA,
-        //RACA_PRETA,
-        //RACA_AMARELA,
-        //RACA_PARDA,
-        //RACA_INDIGENA,
-        SINTOMAS,
-        CONDICOES,
-        ESTADO_TESTE,
-        TIPO_TESTE,
-        RESULTADO_TESTE,
-        CLASSIFICACAO_FINAL,
-        EVOLUCAO_CASO,
-    }
+    //public enum DocumentField
+    //{
+    //    NULL = 0,
+    //    TEM_CPF,
+    //    ESTRANGEIRO,
+    //    PROFISSIONAL_SAUDE,
+    //    PROFISSIONAL_SEGURANCA,
+    //    SEXO,
+    //    RACA,
+    //    //RACA_BRANCA,
+    //    //RACA_PRETA,
+    //    //RACA_AMARELA,
+    //    //RACA_PARDA,
+    //    //RACA_INDIGENA,
+    //    SINTOMAS,
+    //    CONDICOES,
+    //    ESTADO_TESTE,
+    //    TIPO_TESTE,
+    //    RESULTADO_TESTE,
+    //    CLASSIFICACAO_FINAL,
+    //    EVOLUCAO_CASO,
+    //}
     public class CropBoxes
     {
         private Dictionary<DocumentField, Tuple<PointF, PointF, PointF, PointF>> _boxes = new Dictionary<DocumentField, Tuple<PointF, PointF, PointF, PointF>>();

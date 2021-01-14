@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using image_cloud_processor.Utils;
 using MongoDB.Bson.Serialization.Options;
+using recopa_types;
 
 namespace image_cloud_processor.Models
 {
@@ -86,7 +86,7 @@ namespace image_cloud_processor.Models
 
         [JsonIgnore]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
-        public Dictionary<DocumentField, string> CropedFields { get; internal set; }
+        public Dictionary<DocumentField, string> CropedFields { get; set; }
 
         public Sintomas Sintomas { get; set; }
         // TODO: Pendente incluiro campos do formulário

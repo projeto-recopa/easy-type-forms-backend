@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "image-cloud-processor", "image-cloud-processor\image-cloud-processor.csproj", "{74B3079C-1A20-4391-A25B-D85B9C10913B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractTrainningData", "ExtractTrainningData\ExtractTrainningData.csproj", "{B1AD4FD7-4B44-40DC-B957-2508A5A713CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtractTrainningData", "ExtractTrainningData\ExtractTrainningData.csproj", "{B1AD4FD7-4B44-40DC-B957-2508A5A713CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "document-ml-predict", "document-ml-predict\document-ml-predict.csproj", "{1311675D-6F3E-4D49-8D44-7C21E1CCE17E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B1AD4FD7-4B44-40DC-B957-2508A5A713CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1AD4FD7-4B44-40DC-B957-2508A5A713CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1AD4FD7-4B44-40DC-B957-2508A5A713CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1311675D-6F3E-4D49-8D44-7C21E1CCE17E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1311675D-6F3E-4D49-8D44-7C21E1CCE17E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1311675D-6F3E-4D49-8D44-7C21E1CCE17E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1311675D-6F3E-4D49-8D44-7C21E1CCE17E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

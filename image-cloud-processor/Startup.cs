@@ -48,10 +48,15 @@ namespace image_cloud_processor
                                       builder
                                       .AllowAnyOrigin()
                                       .AllowAnyMethod()
-                                      .AllowAnyHeader();
-                                      //WithOrigins("http://example.com", "http://www.contoso.com");
+                                      .AllowAnyHeader()
+                                      //.AllowCredentials()
+                                      .SetPreflightMaxAge(TimeSpan.FromSeconds(360))
+                                      //.WithOrigins("http://easy-typing.siteseguro.ws", "http://www.contoso.com")
+                                      ;
                                   });
             });
+            //services.AddCors(); //This needs to let it default
+
 
             services.AddSingleton<IDocumentosRepository<Document>, DocumentosRepository>();
             services.AddControllers();
@@ -60,28 +65,28 @@ namespace image_cloud_processor
 
             services.AddTransient<UploadService>();
             services.AddTransient<ImageService>();
-            services.AddTransient<PredictionMLService>();
+            //services.AddTransient<PredictionMLService>();
 
             services.AddTransient<DocumentService>();
             services.AddTransient<CloudImageProcessor>();
 
-            services
-            .AddPredictionEnginePool<ModelInput, ModelOutput>()
+            //services
+            //.AddPredictionEnginePool<ModelInput, ModelOutput>()
             //.FromFile(modelName: "", filePath: "")
             //.FromFile(modelName: "Field_SexoModel", filePath: "SexoMLModel.zip")
             //.FromFile(modelName: "Field_SintomaFebreModel", filePath: "SintomaFebreMLModel.zip");
-            .FromUri(
-                modelName: "Field_ResultadoTesteModel",
-                uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/ResultadoTesteMLModel.zip",
-                period: TimeSpan.FromMinutes(1))
-            .FromUri(
-                modelName: "Field_SexoModel",
-                uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SexoMLModel.zip",
-                period: TimeSpan.FromMinutes(1))
-            .FromUri(
-                modelName: "Field_SintomaFebreModel",
-                uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SintomaFebreMLModel.zip",
-                period: TimeSpan.FromMinutes(1));
+            //.FromUri(
+            //    modelName: "Field_ResultadoTesteModel",
+            //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/ResultadoTesteMLModel.zip",
+            //    period: TimeSpan.FromMinutes(1))
+            //.FromUri(
+            //    modelName: "Field_SexoModel",
+            //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SexoMLModel.zip",
+            //    period: TimeSpan.FromMinutes(1))
+            //.FromUri(
+            //    modelName: "Field_SintomaFebreModel",
+            //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SintomaFebreMLModel.zip",
+            //    period: TimeSpan.FromMinutes(1));
 
         }
 
@@ -108,6 +113,9 @@ namespace image_cloud_processor
             app.UseRouting();
 
             app.UseCors(AllowedOrigins);
+            //app.UseCors(
+            //                options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+            //            ); //This needs to set everything allowed
 
             //app.UseAuthorization();
 

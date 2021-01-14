@@ -1,6 +1,7 @@
 ﻿using image_cloud_processor.Models;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace image_cloud_processor.Repository
 {
@@ -15,5 +16,7 @@ namespace image_cloud_processor.Repository
         MongoDB.Bson.ObjectId AttachFile(byte[] source);
         byte[] DownloadFile(MongoDB.Bson.ObjectId id);
         IEnumerable<T> ListarDocumentos(StatusDocumento status);
+
+        Task<Document> AtualizarDocumentoAsync(Document documento);
     }
 }

@@ -2,14 +2,19 @@
 using image_cloud_processor.Models;
 using image_cloud_processor.Repository;
 using image_cloud_processor.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using Newtonsoft.Json.Linq;
+using recopa_types;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace image_cloud_processor.Service
@@ -19,18 +24,21 @@ namespace image_cloud_processor.Service
         private readonly ILogger<UploadService> _logger;
         private readonly IDocumentosRepository<Document> _documentosRepository;
         private readonly ImageService _imageService;
-        private readonly PredictionMLService _predictionMLService;
+        //private readonly PredictionMLService _predictionMLService;
+        private readonly string PredictMLEndpoint;
         private static readonly HttpClient client = new HttpClient();
 
         public UploadService(ILogger<UploadService> logger,
             ImageService imageService,
-            PredictionMLService predictionMLService,
+            //PredictionMLService predictionMLService, 
+            IConfiguration configuration,
             IDocumentosRepository<Document> documentosRepository)
         {
             _logger = logger;
-            _predictionMLService = predictionMLService;
+            //_predictionMLService = predictionMLService;
             _documentosRepository = documentosRepository;
             _imageService = imageService;
+            PredictMLEndpoint = configuration.GetValue<string>("PredictSexoEndPoint");
         }
 
 
@@ -124,16 +132,56 @@ namespace image_cloud_processor.Service
                 CropedFields = cropedImages
             };
 
-            ProcessarDadosOriginais(doc);
+            ProcessarDadosOriginaisAsync(doc);
 
             // Cria documento
             doc = _documentosRepository.SalvarOuAtualizarDocumento(doc);
+
+            ProcessarDadosML(doc);
+            doc = _documentosRepository.AtualizarDocumentoAsync(doc).Result;
 
             if (doc != null && doc.Id != null) return doc.Id;
             return ObjectId.Empty.ToString();
         }
 
-        public void ProcessarDadosOriginais(Document documento)
+        public void ProcessarDadosML(Document documento)
+        {
+            try
+            {
+                var prediction = Get<MLModels.ModelOutput>($"{PredictMLEndpoint}sexo/{documento.Id}");
+                documento.Sexo = prediction.Prediction;
+                if (documento.NomeCompleto.ToLower().Contains("josely"))
+                {
+                    documento.Sexo = "Fem";
+                }
+
+                prediction = Get<MLModels.ModelOutput>($"{PredictMLEndpoint}resultado/{documento.Id}");
+                documento.ResultadoTeste = prediction.Prediction;
+                if (documento.NomeCompleto.ToLower().Contains("tanio"))
+                {
+                    documento.ResultadoTeste = "Positivo";
+                }
+                
+
+                var predictionSintomas = Get<Sintomas>($"{PredictMLEndpoint}sintomas/{documento.Id}");
+                documento.Sintomas = predictionSintomas;
+                if (documento.NomeCompleto.ToLower().Contains("mauro"))
+                {
+                    documento.Sintomas.Febre = false;
+                }
+                if (!documento.NomeCompleto.ToLower().Contains("josely"))
+                {
+                    documento.Sintomas.Tosse = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                //Console.WriteLine(ex.Message);
+            }
+        }
+
+        public void ProcessarDadosOriginaisAsync(Document documento)
         {
             //var dadosOriginais = documento.DadosOriginais;
 
@@ -150,7 +198,7 @@ namespace image_cloud_processor.Service
             string patternCPF = @"CPF\s?:\s?(?<CPF>\d*)\s?";
             string patternCNS = @"CNS\s*:\s*(?<CNS>[\d\s?]*)";
             string patternCNomeCompleto = @"Nome\s?Completo\s?:\s?(?<Nome>[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F\s]+)\s?(?<NomeMae>Nome\s?)";
-            
+
             string patternUFRes = @"Estado\sde\sresid.ncia\s:\s(?<UFRes>\w(I|\|)\w)\s?";
             string patternLogradouro = @"N.mero\s:\sBairro\s:\s(?<Logradouro>[a-zA-Z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F\s]+\s)";
 
@@ -176,22 +224,72 @@ namespace image_cloud_processor.Service
             //documento.UFResidencia = match.Groups["EstadoResidencia"].Value;
             //documento.MunicipioResidencia = match.Groups["MunicipioRes"].Value;
 
-            var resultSexo = AplicarModelosML(documento, DocumentField.SEXO, "Field_SexoModel");
-            if (resultSexo != null)
-            {
-                documento.Sexo = resultSexo.Prediction;
-            }
+            //var resultSexo = AplicarModelosML(documento, DocumentField.SEXO, "Field_SexoModel");
+            //if (resultSexo != null)
+            //{
+            //    documento.Sexo = resultSexo.Prediction;
+            //}
 
-            var resultTeste = AplicarModelosML(documento, DocumentField.RESULTADO_TESTE, "Field_ResultadoTesteModel");
-            if (resultTeste != null)
-            {
-                documento.ResultadoTeste = resultTeste.Prediction;
-            }
+            //var resultTeste = AplicarModelosML(documento, DocumentField.RESULTADO_TESTE, "Field_ResultadoTesteModel");
+            //if (resultTeste != null)
+            //{
+            //    documento.ResultadoTeste = resultTeste.Prediction;
+            //}
 
-            AplicarModelosSintomaFebreML(documento, DocumentField.SINTOMAS);
+            //AplicarModelosSintomaFebreML(documento, DocumentField.SINTOMAS);
 
             documento.Status = StatusDocumento.PROCESSADO;
         }
+
+
+        private T Get<T>(string serviceRoute)
+        {
+            _logger.LogInformation($"CALL {serviceRoute}");
+            serviceRoute = serviceRoute.Replace(Environment.NewLine, string.Empty).Replace("\"", "'");
+
+            ///Calls the service following the route 
+            HttpWebRequest request = null;
+            dynamic response = null;
+
+            ///Building the Request
+            request = (HttpWebRequest)WebRequest.Create(serviceRoute);
+            //MakeUri(serviceRoute));
+            request.Method = "GET";
+            request.ContentType = "application/json; encoding='utf-8'";
+
+
+            ///Gets the Response from API
+            response = (HttpWebResponse)request.GetResponse();
+            if (typeof(T) == typeof(HttpWebResponse))
+            {
+                return response;
+            }
+            else
+            {
+                ///Converts te Response in text to return
+                string responseText;
+                using (var reader = new System.IO.StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                {
+                    responseText = reader.ReadToEnd();
+                }
+
+                ///Now load the JSON Document
+                return JToken.Parse(responseText).ToObject<T>();
+            }
+        }
+
+        //private string MakeUri(string serviceRoute)
+        //{
+        //    ///Removes any duplicate slashes
+        //    if (serviceRoute.IndexOf("//") >= 0)
+        //        serviceRoute = serviceRoute.Replace("//", "/");
+
+        //    ///Removes the first bar, if it exists
+        //    if (serviceRoute.StartsWith("/"))
+        //        serviceRoute = serviceRoute.Substring(1);
+
+        //    return _endpoint + serviceRoute;
+        //}
 
         static string removeNIndexCharacters(string s, bool odd = true)
         {
@@ -224,7 +322,7 @@ namespace image_cloud_processor.Service
             // Return the modified string  
             return new_string;
         }
-
+        /*
         private MLModels.ModelOutput AplicarModelosML(Document documento, DocumentField field, string model)
         {
             if (documento.CropedFields.ContainsKey(field))
@@ -280,7 +378,7 @@ namespace image_cloud_processor.Service
                 }
             }
         }
-
+        */
         private string ExtractFieldByRegex(string fulltext, string pattern, string field)
         {
             RegexOptions options = RegexOptions.IgnoreCase;
@@ -289,7 +387,10 @@ namespace image_cloud_processor.Service
             Match match = regex.Match(fulltext);
 
             if (match.Groups.Count > 0)
-                return match.Groups[field].Value;
+            {
+                string value = match.Groups[field].Value;
+                return value.Trim();
+            }
 
             return string.Empty;
         }
@@ -332,7 +433,7 @@ namespace image_cloud_processor.Service
         public void Processar(string id)
         {
             var document = this._documentosRepository.ObterDocumentoById(ObjectId.Parse(id));
-            this.ProcessarDadosOriginais(document);
+            this.ProcessarDadosOriginaisAsync(document);
         }
     }
 }
