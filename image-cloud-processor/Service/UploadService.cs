@@ -71,7 +71,6 @@ namespace image_cloud_processor.Service
 
                 var cropBoxes = new CropBoxes();
 
-
                 foreach (var page in response.Pages)
                 {
                     foreach (var block in page.Blocks)
@@ -92,7 +91,6 @@ namespace image_cloud_processor.Service
                                 cropBoxes.Push(palavra, wordBox);
 
                                 paragrafo.Palavras.Add(palavra);
-
                             }
 
                             bloco.Paragrafos.Add(paragrafo);
@@ -102,15 +100,11 @@ namespace image_cloud_processor.Service
                 }
 
                 var imageEdit = streamedFileContent;
-                //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesWords, System.Drawing.Color.Red);
-                //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesParagraph, System.Drawing.Color.Purple);
-                //imageEdit = _imageService.CreateBoundingBox(imageEdit, boxesBlock, System.Drawing.Color.DarkOliveGreen);
 
                 // Salva a imagem no banco
                 var attachmentID = this._documentosRepository.AttachFile(streamedFileContent);
                 var editID = this._documentosRepository.AttachFile(imageEdit);
 
-                //var cropedSexo = sexoBox != null ? _documentosRepository.AttachFile(_imageService.CropImage(imageEdit, sexoBox, 8, 4)) : MongoDB.Bson.ObjectId.Empty;
                 var cropedImages = new Dictionary<DocumentField, string>();
                 foreach (var field in cropBoxes.GetBoxes())
                 {
@@ -330,63 +324,7 @@ namespace image_cloud_processor.Service
             // Return the modified string  
             return new_string;
         }
-        /*
-        private MLModels.ModelOutput AplicarModelosML(Document documento, DocumentField field, string model)
-        {
-            if (documento.CropedFields.ContainsKey(field))
-            {
-                var id = ObjectId.Parse(documento.CropedFields[field]);
-                var bytes = _documentosRepository.DownloadFile(id);
-                string path = Path.GetTempFileName();
-
-                using (var ms = new MemoryStream(bytes))
-                {
-                    using (var fs = new FileStream(path, FileMode.Create))
-                    {
-                        ms.WriteTo(fs);
-                    }
-                }
-
-                var result = this._predictionMLService.Predict(new MLModels.ModelInput
-                {
-                    ImageSource = path
-                }, model);
-                return result;
-                //if (result != null)
-                //{
-                //    documento.Sexo = result.Prediction;
-                //}
-            }
-            return null;
-        }
-        private void AplicarModelosSintomaFebreML(Document documento, DocumentField field)
-        {
-            if (documento.CropedFields.ContainsKey(field))
-            {
-                var id = ObjectId.Parse(documento.CropedFields[field]);
-                var bytes = _documentosRepository.DownloadFile(id);
-                string path = Path.GetTempFileName();
-
-                using (var ms = new MemoryStream(bytes))
-                {
-                    using (var fs = new FileStream(path, FileMode.Create))
-                    {
-                        ms.WriteTo(fs);
-                    }
-                }
-
-                var result = this._predictionMLService.Predict(new MLModels.ModelInput
-                {
-                    ImageSource = path
-                }, "Field_SintomaFebreModel");
-                documento.Sintomas = new Sintomas();
-                if (result != null)
-                {
-                    documento.Sintomas.Febre = (result.Prediction == "SIM");
-                }
-            }
-        }
-        */
+        
         private string ExtractFieldByRegex(string fulltext, string pattern, string field)
         {
             RegexOptions options = RegexOptions.IgnoreCase;
@@ -419,7 +357,7 @@ namespace image_cloud_processor.Service
             return builder.ToString();
         }
 
-        public byte[] DownloadImage(string id, int edited = 0)
+        public byte[] DownloadImage(string id, int edited = -1)
         {
             var document = this._documentosRepository.ObterDocumentoById(MongoDB.Bson.ObjectId.Parse(id));
             if (document != null)

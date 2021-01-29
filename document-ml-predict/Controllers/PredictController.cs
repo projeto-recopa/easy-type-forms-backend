@@ -32,10 +32,6 @@ namespace document_ml_predict.Controllers
             {
                 _logger.LogInformation($"Get Sexo Prediction for Document: {id}");
                 return _predictionMLService.PredictSexoForDocument(id);
-                //return new ModelOutput
-                //{
-                //    Prediction = "Teste"
-                //};
             }
             catch (Exception ex)
             {
@@ -70,11 +66,6 @@ namespace document_ml_predict.Controllers
             {
                 _logger.LogInformation($"Get Sintomas Prediction for Document: {id}");
                 var value = _predictionMLService.PredictSintomaFebreForDocument(id);
-
-                //return new ModelOutput
-                //{
-                //    Prediction = "Teste"
-                //};
                 return new Sintomas
                 {
                     Febre = (value.Prediction == "SIM")

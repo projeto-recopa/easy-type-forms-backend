@@ -12,7 +12,7 @@ namespace ExtractTrainningData
         {
             //var srcPath = @"C:\Users\a.de.melo.pinheiro\Downloads\drive-download-20201226T220426Z-001\Teste0";
             var srcPath = @"C:\Users\a.de.melo.pinheiro\Downloads\drive-download-20201226T220426Z-001\Massas de teste";
-            var dstPath = @$"{srcPath}\Crops";
+            var dstPath = @$"{srcPath}\Crops2";
             InitializeGoogleCredentials();
 
             var fileList = System.IO.Directory.EnumerateFiles(srcPath);
@@ -24,14 +24,27 @@ namespace ExtractTrainningData
                 Console.WriteLine($"Progress: {index}/{total} - {(index / total) * 100}%");
                 var cropBoxes = CloudVisionTextExtraction.GetTextExtraction(item);
 
-                foreach (var field in cropBoxes.GetBoxes())
+                //ExtractFields(dstPath, item, cropBoxes);
+
+                foreach (var field in cropBoxes.GetOptionsBoxes())
                 {
-                    var dimension = CropBoxes.GetFieldDimension(field);
+                    var dimension = CropBoxes.GetOptionsFieldDimension(field);
 
                     string filenameFinal = Path.Combine(dstPath, field.ToString());
-                    CropAndSaveImage(item, filenameFinal, cropBoxes.GetBox(field), dimension.Item1, dimension.Item2);
+                    CropAndSaveImage(item, filenameFinal, cropBoxes.GetOptionsBox(field), dimension.Item1, dimension.Item2, dimension.Item3, dimension.Item4);
                 }
                 index++;
+            }
+        }
+
+        private static void ExtractFields(string dstPath, string item, CropBoxes cropBoxes)
+        {
+            foreach (var field in cropBoxes.GetBoxes())
+            {
+                var dimension = CropBoxes.GetFieldDimension(field);
+
+                string filenameFinal = Path.Combine(dstPath, field.ToString());
+                CropAndSaveImage(item, filenameFinal, cropBoxes.GetBox(field), dimension.Item1, dimension.Item2);
             }
         }
 
@@ -39,13 +52,16 @@ namespace ExtractTrainningData
         // Sexo 8x4
         // Raça 12x4
 
-        public static void CropAndSaveImage(string fullPathImage, string fullPath, Tuple<PointF, PointF, PointF, PointF> sexoBox, float resizeX, float resizeY)
+        public static void CropAndSaveImage(string fullPathImage, string fullPath, Tuple<PointF, PointF, PointF, PointF> sexoBox, float hResize, float vResize, float xTranslate = 0f, float yTranslate = 0f)
         {
             var image = System.Drawing.Image.FromFile(fullPathImage) as Bitmap;
 
-            RectangleF cropRect = new RectangleF(sexoBox.Item1.X, sexoBox.Item1.Y,
-                (sexoBox.Item2.X - sexoBox.Item1.X) * resizeX,
-                (sexoBox.Item3.Y - sexoBox.Item1.Y) * resizeY);
+            var width = (sexoBox.Item2.X - sexoBox.Item1.X);
+            var heigth = (sexoBox.Item3.Y - sexoBox.Item1.Y);
+
+            RectangleF cropRect = new RectangleF(sexoBox.Item1.X +(width * xTranslate), sexoBox.Item1.Y + (heigth * yTranslate),
+                width * hResize,
+                heigth * vResize);
 
 
             Bitmap src = image as Bitmap;

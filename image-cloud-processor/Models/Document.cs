@@ -13,7 +13,7 @@ namespace image_cloud_processor.Models
 {
     public enum StatusDocumento
     {
-        UPLOAD = 0, PROCESSADO, EDICAO, CONCLUIDO, TRANSMITIDO
+        UPLOAD = 0, PROCESSADO, EDICAO, TRANSMITIDO
     }
 
     public class Document

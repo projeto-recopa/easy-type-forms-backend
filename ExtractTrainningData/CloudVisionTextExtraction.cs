@@ -31,7 +31,7 @@ namespace ExtractTrainningData
                     }
                 }
             }
-            return cropBoxes;
+            return cropBoxes.PopulateBoxes();
         }
 
         private static Tuple<System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF> BoundigBoxToPoints(BoundingPoly bounding)

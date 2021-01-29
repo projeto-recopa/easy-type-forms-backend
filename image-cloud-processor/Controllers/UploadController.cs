@@ -139,7 +139,7 @@ namespace image_cloud_processor.Controllers
 
         // GET api/<DocumentController>/5
         [HttpGet("download/{id}")]
-        public ActionResult Get(string id, [FromQuery] int edit = 0)
+        public ActionResult Get(string id, [FromQuery] int edit = -1)
         {
             byte[] bytesInStream = this._uploadService.DownloadImage(id, edit);
 

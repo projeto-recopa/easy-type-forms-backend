@@ -33,10 +33,18 @@ namespace image_cloud_processor.Service
         }
         public ModelOutput Predict(ModelInput input, string modelName)
         {
+            try
+            {
 
-            ModelOutput prediction = _predictionEnginePool.GetPredictionEngine(modelName).Predict(example: input);
+                ModelOutput prediction = _predictionEnginePool.GetPredictionEngine(modelName).Predict(example: input);
 
-            return prediction;
+                return prediction;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Erro no motor de predição {ex.Message}");
+                throw;
+            }
         }
 
         public ModelOutput PredictSexoForDocument(string id)

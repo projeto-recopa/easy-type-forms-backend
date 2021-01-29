@@ -28,7 +28,7 @@ namespace image_cloud_processor
             if (string.IsNullOrEmpty(googleCredential))
             {
                 Console.WriteLine("Google Credentials not SET - Loading for Dev Enviroment");
-                string credential_path = @"C:\Users\a.de.melo.pinheiro\Documents\CESAR School\projeto-recopa\api-auth\API Project-64e82001381f.json";
+                string credential_path = "google-credentials.json";// @"C:\Users\a.de.melo.pinheiro\Documents\CESAR School\projeto-recopa\api-auth\API Project-64e82001381f.json";
                 System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
             }
             googleCredential = System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
