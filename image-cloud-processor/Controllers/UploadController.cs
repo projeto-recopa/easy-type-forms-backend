@@ -29,7 +29,7 @@ namespace image_cloud_processor.Controllers
         private readonly long _fileSizeLimit;
         private readonly ILogger<UploadController> _logger;
         private readonly UploadService _uploadService;
-        //private readonly IDocumentosRepository _documentosRepository;
+
         private readonly string[] _permittedExtensions = { ".png", ".jpeg", ".jpg" };
         private readonly string _targetFilePath;
 
@@ -147,6 +147,7 @@ namespace image_cloud_processor.Controllers
             return File(memory,  "image/png", $"{id}.png");
 
         }
+
         private static Encoding GetEncoding(MultipartSection section)
         {
             var hasMediaTypeHeader =

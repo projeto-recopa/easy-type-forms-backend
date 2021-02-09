@@ -1,6 +1,6 @@
 using System;
 using image_cloud_processor.Middlware;
-using image_cloud_processor.MLModels;
+
 using image_cloud_processor.Models;
 using image_cloud_processor.Repository;
 using image_cloud_processor.Service;
@@ -21,14 +21,12 @@ namespace image_cloud_processor
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
-
             // TODO: Put this path in appsettings
             var googleCredential = System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
             if (string.IsNullOrEmpty(googleCredential))
             {
                 Console.WriteLine("Google Credentials not SET - Loading for Dev Enviroment");
-                string credential_path = "google-credentials.json";// @"C:\Users\a.de.melo.pinheiro\Documents\CESAR School\projeto-recopa\api-auth\API Project-64e82001381f.json";
+                string credential_path = "google-credentials.json";
                 System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
             }
             googleCredential = System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
@@ -50,9 +48,7 @@ namespace image_cloud_processor
                                       .AllowAnyOrigin()
                                       .AllowAnyMethod()
                                       .AllowAnyHeader()
-                                      //.AllowCredentials()
                                       .SetPreflightMaxAge(TimeSpan.FromSeconds(360))
-                                      //.WithOrigins("http://easy-typing.siteseguro.ws", "http://www.contoso.com")
                                       ;
                                   });
             });
@@ -65,30 +61,12 @@ namespace image_cloud_processor
             services.AddSwaggerGen();
 
             services.AddTransient<UploadService>();
+            services.AddTransient<DownloadService>();
             services.AddTransient<ImageService>();
-            //services.AddTransient<PredictionMLService>();
 
             services.AddTransient<DocumentService>();
             services.AddTransient<CloudImageProcessor>();
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
-
-            //services
-            //.AddPredictionEnginePool<ModelInput, ModelOutput>()
-            //.FromFile(modelName: "", filePath: "")
-            //.FromFile(modelName: "Field_SexoModel", filePath: "SexoMLModel.zip")
-            //.FromFile(modelName: "Field_SintomaFebreModel", filePath: "SintomaFebreMLModel.zip");
-            //.FromUri(
-            //    modelName: "Field_ResultadoTesteModel",
-            //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/ResultadoTesteMLModel.zip",
-            //    period: TimeSpan.FromMinutes(1))
-            //.FromUri(
-            //    modelName: "Field_SexoModel",
-            //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SexoMLModel.zip",
-            //    period: TimeSpan.FromMinutes(1))
-            //.FromUri(
-            //    modelName: "Field_SintomaFebreModel",
-            //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SintomaFebreMLModel.zip",
-            //    period: TimeSpan.FromMinutes(1));
 
             services.AddGlobalExceptionHandlerMiddleware();
         }
@@ -116,17 +94,14 @@ namespace image_cloud_processor
             app.UseRouting();
 
             app.UseCors(AllowedOrigins);
-            //app.UseCors(
-            //                options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
-            //            ); //This needs to set everything allowed
 
+            // TODO: Ativar autorização/autenticação
             //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
 
             app.UseGlobalExceptionHandlerMiddleware();
         }

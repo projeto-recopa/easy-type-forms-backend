@@ -13,7 +13,7 @@ namespace image_cloud_processor.Models
 {
     public enum StatusDocumento
     {
-        UPLOAD = 0, PROCESSADO, EDICAO, CONCLUIDO, TRANSMITIDO
+        UPLOAD = 0, PROCESSADO, EDICAO, TRANSMITIDO
     }
 
     public class Document
@@ -87,6 +87,10 @@ namespace image_cloud_processor.Models
         [JsonIgnore]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
         public Dictionary<DocumentField, string> CropedFields { get; set; }
+
+        [JsonIgnore]
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
+        public Dictionary<OptionsField, string> CropedOptionsFields { get; set; }
 
         public Sintomas Sintomas { get; set; }
         // TODO: Pendente incluiro campos do formulário

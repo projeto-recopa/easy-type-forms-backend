@@ -51,13 +51,6 @@ namespace image_cloud_processor.Service
             return doc;
         }
 
-        public void ProcessarDadosML(Document documento)
-        {
-            var endpoint = @"https://localhost:5002/Predict/";
-
-            var prediction = Get<MLModels.ModelOutput>($"{endpoint}{documento.Id}");
-            documento.Sexo = prediction.Prediction;
-        }
         private T Get<T>(string serviceRoute)
         {
             serviceRoute = serviceRoute.Replace(Environment.NewLine, string.Empty).Replace("\"", "'");

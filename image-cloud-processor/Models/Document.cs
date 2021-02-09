@@ -88,6 +88,10 @@ namespace image_cloud_processor.Models
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
         public Dictionary<DocumentField, string> CropedFields { get; set; }
 
+        [JsonIgnore]
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
+        public Dictionary<OptionsField, string> CropedOptionsFields { get; set; }
+
         public Sintomas Sintomas { get; set; }
         // TODO: Pendente incluiro campos do formulário
         public string ResultadoTeste { get; set; }

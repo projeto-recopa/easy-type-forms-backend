@@ -117,8 +117,8 @@ namespace ExtractTrainningData
                 var lowrCaseWord = word; //.ToLower();
                 if (lowrCaseWord.Contains("Tem")) return DocumentField.TEM_CPF;
                 if (lowrCaseWord.Contains("Estrangeiro")) return DocumentField.ESTRANGEIRO;
-                //if (lowrCaseWord.Contains("profissional") && lowrCaseWord.Contains("saúde")) return DocumentField.PROFISSIONAL_SAUDE;
-                //if (lowrCaseWord.Contains("profissional") && lowrCaseWord.Contains("segurança")) return DocumentField.PROFISSIONAL_SEGURANCA;
+                if (lowrCaseWord.Contains("profissional") && lowrCaseWord.Contains("saúde")) return DocumentField.PROFISSIONAL_SAUDE;
+                if (lowrCaseWord.Contains("profissional") && lowrCaseWord.Contains("segurança")) return DocumentField.PROFISSIONAL_SEGURANCA;
                 if (lowrCaseWord.Contains("Sexo")) return DocumentField.SEXO;
                 if (lowrCaseWord.Contains("Raça") || lowrCaseWord.Contains("Raca")) return DocumentField.RACA;
                 if (lowrCaseWord.Contains("Sintomas")) return DocumentField.SINTOMAS;

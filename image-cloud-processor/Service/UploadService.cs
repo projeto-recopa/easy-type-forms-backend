@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using recopa_types;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -56,10 +57,13 @@ namespace image_cloud_processor.Service
         {
             try
             {
+                var heigth = 2000 * 1.38;
+                var btm = _imageService.ResizeImage(Bitmap.FromStream(new MemoryStream(streamedFileContent)), 2000, (int)heigth);
                 var client = ImageAnnotatorClient.Create();
 
 
-                var image = Image.FromBytes(streamedFileContent);
+                byte[] resizeImageEdit = _imageService.ImageToByteArray(btm);
+                var image = Google.Cloud.Vision.V1.Image.FromBytes(resizeImageEdit);
                 var response = client.DetectDocumentText(image);
 
                 //Graphics.FromImage()
@@ -98,26 +102,15 @@ namespace image_cloud_processor.Service
                         blocos.Add(bloco);
                     }
                 }
-
-                var imageEdit = streamedFileContent;
+                cropBoxes.PopulateBoxes();
+                var imageEdit = resizeImageEdit;
 
                 // Salva a imagem no banco
-                var attachmentID = this._documentosRepository.AttachFile(streamedFileContent);
+                var attachmentID = this._documentosRepository.AttachFile(resizeImageEdit);
                 var editID = this._documentosRepository.AttachFile(imageEdit);
 
-                var cropedImages = new Dictionary<DocumentField, string>();
-                foreach (var field in cropBoxes.GetBoxes())
-                {
-                    if (!cropedImages.ContainsKey(field))
-                    {
-                        var dimension = CropBoxes.GetFieldDimension(field);
-
-                        var imageId = _documentosRepository.AttachFile(_imageService.CropImage(imageEdit, cropBoxes.GetBox(field), dimension.Item1, dimension.Item2));
-
-                        cropedImages.Add(field, imageId.ToString());
-                    }
-                }
-
+                Dictionary<DocumentField, string> cropedImages = ExtractFields(cropBoxes, imageEdit);
+                Dictionary<OptionsField, string> cropedOptionsImages = ExtractOptionsFields(cropBoxes, imageEdit);
 
                 var doc = new Document
                 {
@@ -125,7 +118,8 @@ namespace image_cloud_processor.Service
                     AttachmentId = attachmentID.ToString(),
                     EditedId = editID.ToString(),
                     DadosOriginais = blocos.ToArray(),
-                    CropedFields = cropedImages
+                    CropedFields = cropedImages,
+                    CropedOptionsFields = cropedOptionsImages
                 };
 
                 ProcessarDadosOriginaisAsync(doc);
@@ -133,7 +127,8 @@ namespace image_cloud_processor.Service
                 // Cria documento
                 doc = _documentosRepository.SalvarOuAtualizarDocumento(doc);
 
-                ProcessarDadosML(doc);
+                //ProcessarDadosML(doc);
+                AtualizarCamposSelecao(doc);
                 doc = _documentosRepository.AtualizarDocumentoAsync(doc).Result;
 
                 if (doc != null && doc.Id != null) return doc.Id;
@@ -144,6 +139,56 @@ namespace image_cloud_processor.Service
                 _logger.LogError(ex, ex.Message);
                 throw;
             }
+        }
+
+        private void AtualizarCamposSelecao(Document documento)
+        {
+            try
+            {
+                var prediction = Get<MLModels.ModelOutput>($"{PredictMLEndpoint}opcoes/{documento.Id}");
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                //Console.WriteLine(ex.Message);
+            }
+        }
+
+        private Dictionary<DocumentField, string> ExtractFields(CropBoxes cropBoxes, byte[] imageEdit)
+        {
+            var cropedImages = new Dictionary<DocumentField, string>();
+            foreach (var field in cropBoxes.GetBoxes())
+            {
+                if (!cropedImages.ContainsKey(field))
+                {
+                    var dimension = CropBoxes.GetFieldDimension(field);
+
+                    var imageId = _documentosRepository.AttachFile(_imageService.CropImage(imageEdit, cropBoxes.GetBox(field), dimension.Item1, dimension.Item2));
+
+                    cropedImages.Add(field, imageId.ToString());
+                }
+            }
+
+            return cropedImages;
+        }
+
+        private Dictionary<OptionsField, string> ExtractOptionsFields(CropBoxes cropBoxes, byte[] imageEdit)
+        {
+            var cropedImages = new Dictionary<OptionsField, string>();
+            foreach (var field in cropBoxes.GetOptionsBoxes())
+            {
+                if (!cropedImages.ContainsKey(field))
+                {
+                    var dimension = CropBoxes.GetOptionsFieldDimension(field);
+
+                    var imageId = _documentosRepository.AttachFile(_imageService.CropImage(imageEdit, cropBoxes.GetOptionsBox(field), dimension.Item1, dimension.Item2, dimension.Item3, dimension.Item4));
+
+                    cropedImages.Add(field, imageId.ToString());
+                }
+            }
+
+            return cropedImages;
         }
 
         public void ProcessarDadosML(Document documento)

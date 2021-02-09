@@ -40,18 +40,24 @@ namespace document_ml_predict
 
             services
            .AddPredictionEnginePool<ModelInput, ModelOutput>()
-           .FromUri(
-               modelName: "Field_ResultadoTesteModel",
-               uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/ResultadoTesteMLModel.zip",
-               period: TimeSpan.FromMinutes(1))
-           .FromUri(
-               modelName: "Field_SexoModel",
-               uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SexoMLModel.zip",
-               period: TimeSpan.FromMinutes(1))
-           .FromUri(
-               modelName: "Field_SintomaFebreModel",
-               uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SintomaFebreMLModel.zip",
-               period: TimeSpan.FromMinutes(1))
+           //.FromUri(
+           //    modelName: "Field_ResultadoTesteModel",
+           //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/ResultadoTesteMLModel.zip",
+           //    period: TimeSpan.FromMinutes(1))
+           //.FromUri(
+           //    modelName: "Field_SexoModel",
+           //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SexoMLModel.zip",
+           //    period: TimeSpan.FromMinutes(1))
+           //.FromUri(
+           //    modelName: "Field_SintomaFebreModel",
+           //    uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SintomaFebreMLModel.zip",
+           //    period: TimeSpan.FromMinutes(1))
+           .FromFile(
+               modelName: "OptionsField",
+               "MLModel.zip"
+               //uri: "https://github.com/projeto-recopa/recopa-machineleraning-models/raw/master/SintomaFebreMLModel.zip",
+               //period: TimeSpan.FromMinutes(1)
+               )
            ;
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
             //services.AddApplicationInsightsTelemetry(Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY"));

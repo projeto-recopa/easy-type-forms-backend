@@ -1,6 +1,8 @@
 ﻿using Google.Cloud.Vision.V1;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -8,11 +10,10 @@ namespace ExtractTrainningData
 {
     public class CloudVisionTextExtraction
     {
-        public static CropBoxes GetTextExtraction(string item)
+        public static CropBoxes GetTextExtraction(string item, Bitmap btm)
         {
             var client = ImageAnnotatorClient.Create();
-
-            var image = Google.Cloud.Vision.V1.Image.FromFile(item);
+            var image = Google.Cloud.Vision.V1.Image.FromBytes(DrawUtils.ImageToByteArray(btm));
             var response = client.DetectDocumentText(image);
 
             var cropBoxes = new CropBoxes();
@@ -43,5 +44,7 @@ namespace ExtractTrainningData
             var p3 = new System.Drawing.PointF(v[3].X, v[3].Y);
             return new Tuple<System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF, System.Drawing.PointF>(p0, p1, p2, p3);
         }
+
+
     }
 }

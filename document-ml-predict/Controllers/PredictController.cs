@@ -15,11 +15,11 @@ namespace document_ml_predict.Controllers
     public class PredictController : ControllerBase
     {
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<PredictController> _logger;
         private readonly PredictionMLService _predictionMLService;
 
         public PredictController(
-            PredictionMLService predictionMLService, ILogger<WeatherForecastController> logger)
+            PredictionMLService predictionMLService, ILogger<PredictController> logger)
         {
             _logger = logger;
             _predictionMLService = predictionMLService;
@@ -71,6 +71,21 @@ namespace document_ml_predict.Controllers
                     Febre = (value.Prediction == "SIM")
 
                 };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Eror Prediction for Document: {id} - {ex.Message}");
+                throw ex;
+            }
+        }
+
+        [HttpGet("opcoes/{id}")]
+        public void UpdateOptionsFieldPrediction(string id)
+        {
+            try
+            {
+                _logger.LogInformation($"Get Prediction Options fields for Document: {id}");
+                _predictionMLService.PredictOptionsFields(id);
             }
             catch (Exception ex)
             {
