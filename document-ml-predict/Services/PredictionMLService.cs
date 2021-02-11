@@ -103,7 +103,7 @@ namespace image_cloud_processor.Service
             return path;
         }
 
-        public void PredictOptionsFields(string id)
+        public async Task PredictOptionsFieldsAsync(string id)
         {
             var documento = _documentosRepository.ObterDocumento(id);
 
@@ -123,8 +123,9 @@ namespace image_cloud_processor.Service
 
                     UpdateOptionField(documento, key, result.Prediction);
                 }
-            
             }
+
+            await _documentosRepository.AtualizarDocumentoAsync(documento);
         }
 
         private void UpdateOptionField(Document documento, OptionsField field, string prediction)
@@ -149,6 +150,55 @@ namespace image_cloud_processor.Service
                     break;
                 case OptionsField.SEXO_FEM:
                     documento.Sexo = !selecao ? "Masculino" : "Feminino";
+                    break;
+                case OptionsField.EVOLUCAO_CASO_CANCELADO:
+                    documento.EvolucaoCaso = documento.EvolucaoCaso ?? new EvolucaoCaso { };
+                    documento.EvolucaoCaso.Cancelado = selecao;
+                    break;
+                case OptionsField.EVOLUCAO_CASO_CURA:
+                    documento.EvolucaoCaso = documento.EvolucaoCaso ?? new EvolucaoCaso { };
+                    documento.EvolucaoCaso.Cura = selecao;
+                    break;
+                case OptionsField.EVOLUCAO_CASO_IGNORADO:
+                    documento.EvolucaoCaso = documento.EvolucaoCaso ?? new EvolucaoCaso { };
+                    documento.EvolucaoCaso.Ignorado = selecao;
+                    break;
+                case OptionsField.EVOLUCAO_CASO_INTERNADO:
+                    documento.EvolucaoCaso = documento.EvolucaoCaso ?? new EvolucaoCaso { };
+                    documento.EvolucaoCaso.Internado = selecao;
+                    break;
+                case OptionsField.EVOLUCAO_CASO_OBITO:
+                    documento.EvolucaoCaso = documento.EvolucaoCaso ?? new EvolucaoCaso { };
+                    documento.EvolucaoCaso.Obito = selecao;
+                    break;
+                case OptionsField.EVOLUCAO_CASO_TRATAMENTO:
+                    documento.EvolucaoCaso = documento.EvolucaoCaso ?? new EvolucaoCaso { };
+                    documento.EvolucaoCaso.TratamentoDomiciliar = selecao;
+                    break;
+                case OptionsField.EVOLUCAO_CASO_UTI:
+                    documento.EvolucaoCaso = documento.EvolucaoCaso ?? new EvolucaoCaso { };
+                    documento.EvolucaoCaso.InternadoUTI = selecao;
+                    break;
+                case OptionsField.RESULTADO_TESTE_POSITIVO:
+                    documento.ResultadoTeste = !selecao ? "Positivo" : "Negativo";
+                    break;
+                case OptionsField.RESULTADO_TESTE_NEGATIVO:
+                    documento.ResultadoTeste = selecao ? "Positivo" : "Negativo";
+                    break;
+                case OptionsField.RACA_AMARELA:
+                    documento.Raca = selecao ? "Amarela" : documento.Raca;
+                    break;
+                case OptionsField.RACA_BRANCA:
+                    documento.Raca = selecao ? "Branca" : documento.Raca;
+                    break;
+                case OptionsField.RACA_INDIGENA:
+                    documento.Raca = selecao ? "Indigena" : documento.Raca;
+                    break;
+                case OptionsField.RACA_PARDA:
+                    documento.Raca = selecao ? "Parda" : documento.Raca;
+                    break;
+                case OptionsField.RACA_PRETA:
+                    documento.Raca = selecao ? "Preta" : documento.Raca;
                     break;
                 default:
                     break;

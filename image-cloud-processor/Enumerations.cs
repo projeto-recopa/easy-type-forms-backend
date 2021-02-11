@@ -50,9 +50,16 @@ namespace recopa_types
         //CONDICOES,
         //ESTADO_TESTE,
         //TIPO_TESTE,
-        //RESULTADO_TESTE,
+        RESULTADO_TESTE_POSITIVO,
+        RESULTADO_TESTE_NEGATIVO,
         //CLASSIFICACAO_FINAL,
-        //EVOLUCAO_CASO,
+        EVOLUCAO_CASO_CANCELADO,
+        EVOLUCAO_CASO_IGNORADO,
+        EVOLUCAO_CASO_TRATAMENTO,
+        EVOLUCAO_CASO_INTERNADO,
+        EVOLUCAO_CASO_UTI,
+        EVOLUCAO_CASO_OBITO,
+        EVOLUCAO_CASO_CURA,
     }
     class Enumerations
     {

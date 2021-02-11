@@ -80,12 +80,12 @@ namespace document_ml_predict.Controllers
         }
 
         [HttpGet("opcoes/{id}")]
-        public void UpdateOptionsFieldPrediction(string id)
+        public async Task UpdateOptionsFieldPredictionAsync(string id)
         {
             try
             {
                 _logger.LogInformation($"Get Prediction Options fields for Document: {id}");
-                _predictionMLService.PredictOptionsFields(id);
+                await _predictionMLService.PredictOptionsFieldsAsync(id);
             }
             catch (Exception ex)
             {

@@ -50,9 +50,16 @@ namespace ExtractTrainningData
         //CONDICOES,
         //ESTADO_TESTE,
         //TIPO_TESTE,
-        //RESULTADO_TESTE,
+        RESULTADO_TESTE_POSITIVO,
+        RESULTADO_TESTE_NEGATIVO,
         //CLASSIFICACAO_FINAL,
-        //EVOLUCAO_CASO,
+        EVOLUCAO_CASO_CANCELADO,
+        EVOLUCAO_CASO_IGNORADO,
+        EVOLUCAO_CASO_TRATAMENTO,
+        EVOLUCAO_CASO_INTERNADO,
+        EVOLUCAO_CASO_UTI,
+        EVOLUCAO_CASO_OBITO,
+        EVOLUCAO_CASO_CURA,
     }
     public class CropBoxes
     {
@@ -117,8 +124,10 @@ namespace ExtractTrainningData
                 var lowrCaseWord = word; //.ToLower();
                 if (lowrCaseWord.Contains("Tem")) return DocumentField.TEM_CPF;
                 if (lowrCaseWord.Contains("Estrangeiro")) return DocumentField.ESTRANGEIRO;
-                if (lowrCaseWord.Contains("profissional") && lowrCaseWord.Contains("saúde")) return DocumentField.PROFISSIONAL_SAUDE;
-                if (lowrCaseWord.Contains("profissional") && lowrCaseWord.Contains("segurança")) return DocumentField.PROFISSIONAL_SEGURANCA;
+                //if (lowrCaseWord.Contains("profissional")) {
+                if (lowrCaseWord.Contains("saúde")) return DocumentField.PROFISSIONAL_SAUDE;
+                if (lowrCaseWord.Contains("segurança")) return DocumentField.PROFISSIONAL_SEGURANCA;
+                //}
                 if (lowrCaseWord.Contains("Sexo")) return DocumentField.SEXO;
                 if (lowrCaseWord.Contains("Raça") || lowrCaseWord.Contains("Raca")) return DocumentField.RACA;
                 if (lowrCaseWord.Contains("Sintomas")) return DocumentField.SINTOMAS;
@@ -151,18 +160,51 @@ namespace ExtractTrainningData
                 switch (item)
                 {
                     case DocumentField.TEM_CPF:
-                        FindContainedOption(OptionsField.TEM_CPF_SIM, this._boxes[item], GetFieldDimension(DocumentField.TEM_CPF));
-                        FindContainedOption(OptionsField.TEM_CPF_NAO, this._boxes[item], GetFieldDimension(DocumentField.TEM_CPF));
+                        FindContainedOption(OptionsField.TEM_CPF_SIM, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TEM_CPF_NAO, this._boxes[item], GetFieldDimension(item));
                         break;
 
                     case DocumentField.ESTRANGEIRO:
-                        FindContainedOption(OptionsField.ESTRANGEIRO_SIM, this._boxes[item], GetFieldDimension(DocumentField.ESTRANGEIRO));
-                        FindContainedOption(OptionsField.ESTRANGEIRO_NAO, this._boxes[item], GetFieldDimension(DocumentField.ESTRANGEIRO));
+                        FindContainedOption(OptionsField.ESTRANGEIRO_SIM, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.ESTRANGEIRO_NAO, this._boxes[item], GetFieldDimension(item));
+                        break;
+
+                    case DocumentField.PROFISSIONAL_SAUDE:
+                        FindContainedOption(OptionsField.PROFISSIONAL_SAUDE_SIM, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.PROFISSIONAL_SAUDE_NAO, this._boxes[item], GetFieldDimension(item));
+                        break;
+
+                    case DocumentField.PROFISSIONAL_SEGURANCA:
+                        FindContainedOption(OptionsField.PROFISSIONAL_SEGURANCA_SIM, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.PROFISSIONAL_SEGURANCA_NAO, this._boxes[item], GetFieldDimension(item));
                         break;
 
                     case DocumentField.SEXO:
-                        FindContainedOption(OptionsField.SEXO_MASC, this._boxes[item], GetFieldDimension(DocumentField.SEXO));
-                        FindContainedOption(OptionsField.SEXO_FEM, this._boxes[item], GetFieldDimension(DocumentField.SEXO));
+                        FindContainedOption(OptionsField.SEXO_MASC, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.SEXO_FEM, this._boxes[item], GetFieldDimension(item));
+                        break;
+
+                    case DocumentField.RACA:
+                        FindContainedOption(OptionsField.RACA_AMARELA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.RACA_BRANCA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.RACA_INDIGENA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.RACA_PARDA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.RACA_PRETA, this._boxes[item], GetFieldDimension(item));
+                        break;
+
+                    case DocumentField.RESULTADO_TESTE:
+                        FindContainedOption(OptionsField.RESULTADO_TESTE_POSITIVO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.RESULTADO_TESTE_NEGATIVO, this._boxes[item], GetFieldDimension(item));
+                        break;
+
+                    case DocumentField.EVOLUCAO_CASO:
+                        FindContainedOption(OptionsField.EVOLUCAO_CASO_CANCELADO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.EVOLUCAO_CASO_CURA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.EVOLUCAO_CASO_IGNORADO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.EVOLUCAO_CASO_INTERNADO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.EVOLUCAO_CASO_OBITO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.EVOLUCAO_CASO_TRATAMENTO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.EVOLUCAO_CASO_UTI, this._boxes[item], GetFieldDimension(item));
                         break;
                     default: break;
                 }
@@ -194,6 +236,24 @@ namespace ExtractTrainningData
                 case OptionsField.ESTRANGEIRO_NAO: return "não";
                 case OptionsField.SEXO_MASC: return "masculino";
                 case OptionsField.SEXO_FEM: return "feminino";
+                case OptionsField.PROFISSIONAL_SAUDE_SIM: return "sim";
+                case OptionsField.PROFISSIONAL_SAUDE_NAO: return "não";
+                case OptionsField.PROFISSIONAL_SEGURANCA_SIM: return "sim";
+                case OptionsField.PROFISSIONAL_SEGURANCA_NAO: return "não";
+                case OptionsField.RESULTADO_TESTE_POSITIVO: return "positivo";
+                case OptionsField.RESULTADO_TESTE_NEGATIVO: return "negativo";
+                case OptionsField.RACA_AMARELA: return "amarela";
+                case OptionsField.RACA_BRANCA: return "branca";
+                case OptionsField.RACA_INDIGENA: return "indígena";
+                case OptionsField.RACA_PARDA: return "parda";
+                case OptionsField.RACA_PRETA: return "preta";
+                case OptionsField.EVOLUCAO_CASO_CANCELADO: return "cancelado";
+                case OptionsField.EVOLUCAO_CASO_CURA: return "cura";
+                case OptionsField.EVOLUCAO_CASO_IGNORADO: return "ignorado";
+                case OptionsField.EVOLUCAO_CASO_INTERNADO: return "internado"; //TODO: Revisar duplicidade
+                case OptionsField.EVOLUCAO_CASO_OBITO: return "óbito";
+                case OptionsField.EVOLUCAO_CASO_TRATAMENTO: return "domiciliar";
+                case OptionsField.EVOLUCAO_CASO_UTI: return "uti";
                 default: return string.Empty;
             }
 
@@ -230,9 +290,9 @@ namespace ExtractTrainningData
                 case DocumentField.ESTRANGEIRO:
                     return new Tuple<float, float>(2f, 4f);
                 case DocumentField.PROFISSIONAL_SAUDE:
-                    break;
+                    return new Tuple<float, float>(2f, 4f);
                 case DocumentField.PROFISSIONAL_SEGURANCA:
-                    break;
+                    return new Tuple<float, float>(2f, 4f);
                 case DocumentField.SEXO:
                     return new Tuple<float, float>(8f, 4f);
                 case DocumentField.RACA:
@@ -268,33 +328,57 @@ namespace ExtractTrainningData
                 case OptionsField.TEM_CPF_NAO:
                     return new Tuple<float, float, float, float>(1.3f, 1.4f, -1.3f, 0f);
                 case OptionsField.ESTRANGEIRO_SIM:
-                    return new Tuple<float, float, float, float>(1.3f, 1.4f, -1.5f, 0f);
+                    return new Tuple<float, float, float, float>(1.1f, 1.4f, -1.5f, 0f);
                 case OptionsField.ESTRANGEIRO_NAO:
+                    return new Tuple<float, float, float, float>(1.1f, 1.4f, -1.3f, 0f);
+                case OptionsField.PROFISSIONAL_SAUDE_SIM:
+                    return new Tuple<float, float, float, float>(1.3f, 1.4f, -1.5f, 0f);
+                case OptionsField.PROFISSIONAL_SAUDE_NAO:
                     return new Tuple<float, float, float, float>(1.3f, 1.4f, -1.3f, 0f);
-                //case DocumentField.PROFISSIONAL_SAUDE:
-                //    break;
-                //case DocumentField.PROFISSIONAL_SEGURANCA:
-                //    break;
+                case OptionsField.PROFISSIONAL_SEGURANCA_SIM:
+                    return new Tuple<float, float, float, float>(1.3f, 1.4f, -1.5f, 0f);
+                case OptionsField.PROFISSIONAL_SEGURANCA_NAO:
+                    return new Tuple<float, float, float, float>(1.3f, 1.4f, -1.3f, 0f);
                 case OptionsField.SEXO_MASC:
                     return new Tuple<float, float, float, float>(0.5f, 1.4f, -0.5f, 0f);
                 case OptionsField.SEXO_FEM:
                     return new Tuple<float, float, float, float>(0.5f, 1.4f, -0.5f, 0f);
-                    //case DocumentField.RACA:
-                    //    return new Tuple<float, float>(9.4f, 4f);
-                    //case DocumentField.SINTOMAS:
-                    //    return new Tuple<float, float>(5.4f, 4f);
-                    //case DocumentField.CONDICOES:
-                    //    return new Tuple<float, float>(12.0f, 5f);
-                    //case DocumentField.ESTADO_TESTE:
-                    //    return new Tuple<float, float>(1.4f, 6f);
-                    //case DocumentField.TIPO_TESTE:
-                    //    return new Tuple<float, float>(10f, 7f);
-                    //case DocumentField.RESULTADO_TESTE:
-                    //    return new Tuple<float, float>(2f, 5f);
-                    //case DocumentField.CLASSIFICACAO_FINAL:
-                    //    return new Tuple<float, float>(6f, 6f);
-                    //case DocumentField.EVOLUCAO_CASO:
-                    //    return new Tuple<float, float>(5f, 6f);
+                case OptionsField.RACA_AMARELA:
+                    return new Tuple<float, float, float, float>(.6f, 1f, -0.6f, 0f);
+                case OptionsField.RACA_BRANCA:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.7f, 0f);
+                case OptionsField.RACA_INDIGENA:
+                    return new Tuple<float, float, float, float>(.6f, 1f, -0.6f, 0f);
+                case OptionsField.RACA_PARDA:
+                //return new Tuple<float, float, float, float>(.6f, 1f, -0.6f, 0f);
+                case OptionsField.RACA_PRETA:
+                    return new Tuple<float, float, float, float>(.8f, 1f, -0.8f, 0f);
+                //case OptionsField.SINTOMAS:
+                //    return new Tuple<float, float>(5.4f, 4f);
+                //case OptionsField.CONDICOES:
+                //    return new Tuple<float, float>(12.0f, 5f);
+                //case OptionsField.ESTADO_TESTE:
+                //    return new Tuple<float, float>(1.4f, 6f);
+                //case OptionsField.TIPO_TESTE:
+                //    return new Tuple<float, float>(10f, 7f);
+                case OptionsField.RESULTADO_TESTE_POSITIVO:
+                case OptionsField.RESULTADO_TESTE_NEGATIVO:
+                    return new Tuple<float, float, float, float>(.6f, 1f, -0.6f, 0f);
+                //case OptionsField.CLASSIFICACAO_FINAL:
+                //    return new Tuple<float, float>(6f, 6f);
+                case OptionsField.EVOLUCAO_CASO_CANCELADO:
+                    return new Tuple<float, float, float, float>(.5f, 1f, -0.5f, 0f);
+                case OptionsField.EVOLUCAO_CASO_CURA:
+                    return new Tuple<float, float, float, float>(.9f, 1f, -0.8f, 0f);
+                case OptionsField.EVOLUCAO_CASO_IGNORADO:
+                    return new Tuple<float, float, float, float>(.4f, 1f, -0.4f, 0f);
+                case OptionsField.EVOLUCAO_CASO_INTERNADO:
+                case OptionsField.EVOLUCAO_CASO_OBITO:
+                    return new Tuple<float, float, float, float>(0.6f, 1f, -0.5f, 0f);
+                case OptionsField.EVOLUCAO_CASO_TRATAMENTO:
+                    return new Tuple<float, float, float, float>(0.4f, 1f, -0.9f, 0f);
+                case OptionsField.EVOLUCAO_CASO_UTI:
+                    return new Tuple<float, float, float, float>(1.2f, 1f, -4f, 0f);
                     //default:
                     //break;
             }
