@@ -46,8 +46,18 @@ namespace ExtractTrainningData
         RACA_AMARELA,
         RACA_PARDA,
         RACA_INDIGENA,
-        //SINTOMAS,
-        //CONDICOES,
+        SINTOMAS_FEBRE,
+        SINTOMAS_DOR_GARGANTA,
+        SINTOMAS_TOSSE,
+        SINTOMAS_DISPNEIA,
+        SINTOMAS_OUTROS,
+        CONDICOES_DOENCAS_RESPIRATORIAS,
+        CONDICOES_DOENCAS_RENAIS,
+        CONDICOES_DOENCAS_CROMOSSOMICA,
+        CONDICOES_DIABETES,
+        CONDICOES_IMUNOSSUPRESSAO,
+        CONDICOES_DOENCAS_CARDIACAS,
+        CONDICOES_GESTANTE,
         //ESTADO_TESTE,
         //TIPO_TESTE,
         RESULTADO_TESTE_POSITIVO,
@@ -206,6 +216,23 @@ namespace ExtractTrainningData
                         FindContainedOption(OptionsField.EVOLUCAO_CASO_TRATAMENTO, this._boxes[item], GetFieldDimension(item));
                         FindContainedOption(OptionsField.EVOLUCAO_CASO_UTI, this._boxes[item], GetFieldDimension(item));
                         break;
+                    case DocumentField.SINTOMAS:
+                        FindContainedOption(OptionsField.SINTOMAS_DISPNEIA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.SINTOMAS_DOR_GARGANTA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.SINTOMAS_FEBRE, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.SINTOMAS_TOSSE, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.SINTOMAS_OUTROS, this._boxes[item], GetFieldDimension(item));
+                        break;
+
+                    case DocumentField.CONDICOES:
+                        FindContainedOption(OptionsField.CONDICOES_DIABETES, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CONDICOES_DOENCAS_CARDIACAS, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CONDICOES_DOENCAS_RENAIS, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CONDICOES_DOENCAS_RESPIRATORIAS, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CONDICOES_DOENCAS_CROMOSSOMICA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CONDICOES_GESTANTE, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CONDICOES_IMUNOSSUPRESSAO, this._boxes[item], GetFieldDimension(item));
+                        break;
                     default: break;
                 }
             }
@@ -254,6 +281,18 @@ namespace ExtractTrainningData
                 case OptionsField.EVOLUCAO_CASO_OBITO: return "óbito";
                 case OptionsField.EVOLUCAO_CASO_TRATAMENTO: return "domiciliar";
                 case OptionsField.EVOLUCAO_CASO_UTI: return "uti";
+                case OptionsField.SINTOMAS_DISPNEIA: return "dispneia";
+                case OptionsField.SINTOMAS_DOR_GARGANTA: return "garganta";
+                case OptionsField.SINTOMAS_FEBRE: return "febre";
+                case OptionsField.SINTOMAS_TOSSE: return "tosse";
+                case OptionsField.SINTOMAS_OUTROS: return "outros";
+                case OptionsField.CONDICOES_DOENCAS_RESPIRATORIAS: return "respiratórias";
+                case OptionsField.CONDICOES_DOENCAS_RENAIS: return "renais";
+                case OptionsField.CONDICOES_DOENCAS_CROMOSSOMICA: return "cromossômicas";
+                case OptionsField.CONDICOES_DIABETES: return "diabetes";
+                case OptionsField.CONDICOES_IMUNOSSUPRESSAO: return "imunossupressão";
+                case OptionsField.CONDICOES_DOENCAS_CARDIACAS: return "cardíacas";
+                case OptionsField.CONDICOES_GESTANTE: return "gestante";
                 default: return string.Empty;
             }
 
@@ -352,11 +391,31 @@ namespace ExtractTrainningData
                 case OptionsField.RACA_PARDA:
                 //return new Tuple<float, float, float, float>(.6f, 1f, -0.6f, 0f);
                 case OptionsField.RACA_PRETA:
-                    return new Tuple<float, float, float, float>(.8f, 1f, -0.8f, 0f);
-                //case OptionsField.SINTOMAS:
-                //    return new Tuple<float, float>(5.4f, 4f);
-                //case OptionsField.CONDICOES:
-                //    return new Tuple<float, float>(12.0f, 5f);
+                    return new Tuple<float, float, float, float>(.8f, 1f, -1.0f, 0f);
+                case OptionsField.SINTOMAS_DISPNEIA:
+                    return new Tuple<float, float, float, float>(.5f, 1f, -0.6f, 0f);
+                case OptionsField.SINTOMAS_DOR_GARGANTA:
+                    return new Tuple<float, float, float, float>(.5f, 1f, -1.3f, 0f);
+                case OptionsField.SINTOMAS_FEBRE:
+                    return new Tuple<float, float, float, float>(0.8f, 1f, -0.9f, 0f);
+                case OptionsField.SINTOMAS_TOSSE:
+                    return new Tuple<float, float, float, float>(0.9f, 1f, -1.0f, 0f);
+                case OptionsField.SINTOMAS_OUTROS:
+                    return new Tuple<float, float, float, float>(0.8f, 1f, -0.8f, 0f);
+                case OptionsField.CONDICOES_DIABETES:
+                    return new Tuple<float, float, float, float>(.5f, 1f, -0.6f, 0f);
+                case OptionsField.CONDICOES_DOENCAS_CARDIACAS:
+                    return new Tuple<float, float, float, float>(.5f, 1f, -1.6f, 0f);
+                case OptionsField.CONDICOES_DOENCAS_CROMOSSOMICA:
+                    return new Tuple<float, float, float, float>(.3f, 1f, -1.7f, 0f);
+                case OptionsField.CONDICOES_DOENCAS_RENAIS:
+                    return new Tuple<float, float, float, float>(.8f, 1f, -2.5f, 0f);
+                case OptionsField.CONDICOES_DOENCAS_RESPIRATORIAS:
+                    return new Tuple<float, float, float, float>(.5f, 1f, -1.2f, 0f);
+                case OptionsField.CONDICOES_GESTANTE:
+                    return new Tuple<float, float, float, float>(.5f, 1f, -0.6f, 0f);
+                case OptionsField.CONDICOES_IMUNOSSUPRESSAO:
+                    return new Tuple<float, float, float, float>(.3f, 1f, -0.3f, 0f);
                 //case OptionsField.ESTADO_TESTE:
                 //    return new Tuple<float, float>(1.4f, 6f);
                 //case OptionsField.TIPO_TESTE:

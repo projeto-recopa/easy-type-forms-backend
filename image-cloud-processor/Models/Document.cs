@@ -93,6 +93,7 @@ namespace image_cloud_processor.Models
         public Dictionary<OptionsField, string> CropedOptionsFields { get; set; }
 
         public Sintomas Sintomas { get; set; }
+        public Condicoes Condicoes { get; set; }
         public EvolucaoCaso EvolucaoCaso { get; set; }
         // TODO: Pendente incluiro campos do formulário
         public string ResultadoTeste { get; set; }

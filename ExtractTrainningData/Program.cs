@@ -15,7 +15,9 @@ namespace ExtractTrainningData
             var dstPath = @$"{srcPath}\Crops3";
             InitializeGoogleCredentials();
 
-            var fileList = System.IO.Directory.EnumerateFiles(srcPath);
+            //var fileList = System.IO.Directory.EnumerateFiles(srcPath);
+            var fileList = new System.Collections.Generic.List<string>();
+            fileList.Add(@"C:\Users\a.de.melo.pinheiro\Downloads\drive-download-20201226T220426Z-001\Massas de teste\ROI_save.png");
             var index = 0;
             var total = fileList.Count();
 
@@ -27,7 +29,7 @@ namespace ExtractTrainningData
                 btm.Save(Path.Combine(dstPath, Path.GetFileName(item)));
                 var cropBoxes = CloudVisionTextExtraction.GetTextExtraction(item, btm);
 
-                //ExtractFields(btm, dstPath, item, cropBoxes);
+                ExtractFields(btm, dstPath, item, cropBoxes);
 
                 ExtractOptionsFields(btm, dstPath, item, cropBoxes);
                 index++;

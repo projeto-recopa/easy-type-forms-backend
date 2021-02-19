@@ -129,7 +129,7 @@ namespace image_cloud_processor.Service
 
                 //ProcessarDadosML(doc);
                 AtualizarCamposSelecao(doc);
-                doc = _documentosRepository.AtualizarDocumentoAsync(doc).Result;
+                //doc = _documentosRepository.AtualizarDocumentoAsync(doc).Result;
 
                 if (doc != null && doc.Id != null) return doc.Id;
                 return ObjectId.Empty.ToString();

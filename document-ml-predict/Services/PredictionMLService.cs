@@ -180,10 +180,10 @@ namespace image_cloud_processor.Service
                     documento.EvolucaoCaso.InternadoUTI = selecao;
                     break;
                 case OptionsField.RESULTADO_TESTE_POSITIVO:
-                    documento.ResultadoTeste = !selecao ? "Positivo" : "Negativo";
+                    documento.ResultadoTeste = selecao ? "Positivo" : "Negativo";
                     break;
                 case OptionsField.RESULTADO_TESTE_NEGATIVO:
-                    documento.ResultadoTeste = selecao ? "Positivo" : "Negativo";
+                    documento.ResultadoTeste = !selecao ? "Positivo" : "Negativo";
                     break;
                 case OptionsField.RACA_AMARELA:
                     documento.Raca = selecao ? "Amarela" : documento.Raca;
@@ -199,6 +199,54 @@ namespace image_cloud_processor.Service
                     break;
                 case OptionsField.RACA_PRETA:
                     documento.Raca = selecao ? "Preta" : documento.Raca;
+                    break;
+                case OptionsField.SINTOMAS_DISPNEIA:
+                    documento.Sintomas = documento.Sintomas ?? new Sintomas { };
+                    documento.Sintomas.Dispneia = selecao;
+                    break;
+                case OptionsField.SINTOMAS_DOR_GARGANTA:
+                    documento.Sintomas = documento.Sintomas ?? new Sintomas { };
+                    documento.Sintomas.DorGarganta = selecao;
+                    break;
+                case OptionsField.SINTOMAS_FEBRE:
+                    documento.Sintomas = documento.Sintomas ?? new Sintomas { };
+                    documento.Sintomas.Febre = selecao;
+                    break;
+                case OptionsField.SINTOMAS_OUTROS:
+                    documento.Sintomas = documento.Sintomas ?? new Sintomas { };
+                    documento.Sintomas.Outros = selecao;
+                    break;
+                case OptionsField.SINTOMAS_TOSSE:
+                    documento.Sintomas = documento.Sintomas ?? new Sintomas { };
+                    documento.Sintomas.Tosse = selecao;
+                    break;
+                case OptionsField.CONDICOES_DIABETES:
+                    documento.Condicoes = documento.Condicoes ?? new Condicoes { };
+                    documento.Condicoes.Diabetes = selecao;
+                    break;
+                case OptionsField.CONDICOES_DOENCAS_CARDIACAS:
+                    documento.Condicoes = documento.Condicoes ?? new Condicoes { };
+                    documento.Condicoes.DoencasCardiacas = selecao;
+                    break;
+                case OptionsField.CONDICOES_DOENCAS_CROMOSSOMICA:
+                    documento.Condicoes = documento.Condicoes ?? new Condicoes { };
+                    documento.Condicoes.DoencasCromossomicas = selecao;
+                    break;
+                case OptionsField.CONDICOES_DOENCAS_RENAIS:
+                    documento.Condicoes = documento.Condicoes ?? new Condicoes { };
+                    documento.Condicoes.DoencasRenais = selecao;
+                    break;
+                case OptionsField.CONDICOES_DOENCAS_RESPIRATORIAS:
+                    documento.Condicoes = documento.Condicoes ?? new Condicoes { };
+                    documento.Condicoes.DoencasRespiratorias = selecao;
+                    break;
+                case OptionsField.CONDICOES_GESTANTE:
+                    documento.Condicoes = documento.Condicoes ?? new Condicoes { };
+                    documento.Condicoes.Gestantes = selecao;
+                    break;
+                case OptionsField.CONDICOES_IMUNOSSUPRESSAO:
+                    documento.Condicoes = documento.Condicoes ?? new Condicoes { };
+                    documento.Condicoes.Imunossupressao = selecao;
                     break;
                 default:
                     break;
