@@ -63,7 +63,7 @@ namespace image_cloud_processor.Utils
             }
         }
 
-        private DocumentField GetFieldByText(string word)
+        private DocumentField GetFieldByText(string word, string texton1, string texton2)
         {
             if (!string.IsNullOrEmpty(word))
             {
@@ -77,8 +77,30 @@ namespace image_cloud_processor.Utils
                 if (lowrCaseWord.Contains("Raça") || lowrCaseWord.Contains("Raca")) return DocumentField.RACA;
                 if (lowrCaseWord.Contains("Sintomas")) return DocumentField.SINTOMAS;
                 if (lowrCaseWord.Contains("Condições")) return DocumentField.CONDICOES;
-                if (lowrCaseWord.Contains("Estado")) return DocumentField.ESTADO_TESTE;
-                if (lowrCaseWord.Contains("Tipo")) return DocumentField.TIPO_TESTE;
+                if (lowrCaseWord.ToLower().Contains("teste"))
+                {
+                    if (
+                        (!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("estado"))
+                        ||
+                        (!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("estado"))
+                        )
+                    {
+                        return DocumentField.ESTADO_TESTE;
+                    }
+
+                    if (
+                        (!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("tipo"))
+                        ||
+                        (!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("tipo"))
+                        )
+                    {
+                        return DocumentField.TIPO_TESTE;
+                    }
+
+                    //    if (lowrCaseWord.Contains("Estado")) return DocumentField.ESTADO_TESTE;
+                    //if (lowrCaseWord.Contains("Tipo")) return DocumentField.TIPO_TESTE;
+                }
+
                 if (lowrCaseWord.Contains("Resultado")) return DocumentField.RESULTADO_TESTE;
                 if (lowrCaseWord.Contains("Classificação")) return DocumentField.CLASSIFICACAO_FINAL;
                 if (lowrCaseWord.Contains("Evolução")) return DocumentField.EVOLUCAO_CASO;
@@ -102,9 +124,13 @@ namespace image_cloud_processor.Utils
 
         public CropBoxes PopulateBoxes()
         {
+            var texton1 = string.Empty;
+            var texton2 = string.Empty;
             foreach (var item in this.all_boxes.Keys)
             {
-                PushSelected(GetFieldByText(item), this.all_boxes[item]);
+                PushSelected(GetFieldByText(item, texton1, texton2), this.all_boxes[item]);
+                texton2 = texton1;
+                texton1 = item; 
             }
 
             foreach (var item in this._boxes.Keys)
@@ -175,13 +201,22 @@ namespace image_cloud_processor.Utils
                         FindContainedOption(OptionsField.CONDICOES_GESTANTE, this._boxes[item], GetFieldDimension(item));
                         FindContainedOption(OptionsField.CONDICOES_IMUNOSSUPRESSAO, this._boxes[item], GetFieldDimension(item));
                         break;
+
+                    case DocumentField.CLASSIFICACAO_FINAL:
+                        FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_CRITERIO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_EPIDEMIOLOGICO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_IMAGEM, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_LABORATORIAL, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_DESCARTADO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_SINDROME_GRIPAL, this._boxes[item], GetFieldDimension(item));
+                        break;
                     default: break;
                 }
             }
             return this;
         }
 
-        private void FindContainedOption(OptionsField option, Tuple<PointF, PointF, PointF, PointF> box, Tuple<float, float> dimension)
+        private void FindContainedOption(OptionsField option, Tuple<PointF, PointF, PointF, PointF> box, Tuple<float, float, float, float> dimension)
         {
             foreach (var item in this.all_boxes.Keys)
             {
@@ -236,12 +271,18 @@ namespace image_cloud_processor.Utils
                 case OptionsField.CONDICOES_IMUNOSSUPRESSAO: return "imunossupressão";
                 case OptionsField.CONDICOES_DOENCAS_CARDIACAS: return "cardíacas";
                 case OptionsField.CONDICOES_GESTANTE: return "gestante";
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_CRITERIO: return "critério";
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_EPIDEMIOLOGICO: return "epidemiológico";
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_IMAGEM: return "imagem";
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_LABORATORIAL: return "laboratorial";
+                case OptionsField.CLASSIFICACAO_FINAL_DESCARTADO: return "descartado";
+                case OptionsField.CLASSIFICACAO_FINAL_SINDROME_GRIPAL: return "gripal";
                 default: return string.Empty;
             }
 
         }
 
-        private bool IsInsidePolygon(Tuple<PointF, PointF, PointF, PointF> tuple, Tuple<PointF, PointF, PointF, PointF> box, Tuple<float, float> dimension)
+        private bool IsInsidePolygon(Tuple<PointF, PointF, PointF, PointF> tuple, Tuple<PointF, PointF, PointF, PointF> box, Tuple<float, float, float, float> dimension)
         {
             RectangleF container = CreatRectFromTuple(box, dimension);
 
@@ -249,52 +290,62 @@ namespace image_cloud_processor.Utils
 
             return container.Contains(field);
         }
-        private static RectangleF CreatRectFromTuple(Tuple<PointF, PointF, PointF, PointF> box, Tuple<float, float> dimension = null)
+        private static RectangleF CreatRectFromTuple(Tuple<PointF, PointF, PointF, PointF> box, Tuple<float, float, float, float> dimension = null)
         {
             var localDimension = dimension;
             if (dimension == null)
-                localDimension = new Tuple<float, float>(1, 1);
+                localDimension = new Tuple<float, float, float, float>(1, 1, 0, 0);
 
-            return new RectangleF(box.Item1.X, box.Item1.Y,
-                (box.Item2.X - box.Item1.X) * localDimension.Item1,
-                (box.Item3.Y - box.Item1.Y) * localDimension.Item2);
+            float hResize = localDimension.Item1, vResize = localDimension.Item2, xTranslate = localDimension.Item3, yTranslate = localDimension.Item4;
+
+            var width = (box.Item2.X - box.Item1.X);
+            var heigth = (box.Item3.Y - box.Item1.Y);
+
+            RectangleF cropRect = new RectangleF(box.Item1.X + (width * xTranslate), box.Item1.Y + (heigth * yTranslate),
+                width * hResize,
+                heigth * vResize);
+
+            //return new RectangleF(box.Item1.X, box.Item1.Y,
+            //    (box.Item2.X - box.Item1.X) * localDimension.Item1,
+            //    (box.Item3.Y - box.Item1.Y) * localDimension.Item2);
+            return cropRect;
         }
-        public static Tuple<float, float> GetFieldDimension(DocumentField field)
+        public static Tuple<float, float, float, float> GetFieldDimension(DocumentField field)
         {
             switch (field)
             {
                 //case DocumentField.NULL:
                 //    break;
                 case DocumentField.TEM_CPF:
-                    return new Tuple<float, float>(5f, 4f);
+                    return new Tuple<float, float, float, float>(5f, 4f, 0f, 0f);
                 case DocumentField.ESTRANGEIRO:
-                    return new Tuple<float, float>(2f, 4f);
+                    return new Tuple<float, float, float, float>(2f, 4f, 0f, 0f);
                 case DocumentField.PROFISSIONAL_SAUDE:
-                    break;
+                    return new Tuple<float, float, float, float>(5f, 4f, -3f, 0f);
                 case DocumentField.PROFISSIONAL_SEGURANCA:
-                    break;
+                    return new Tuple<float, float, float, float>(4f, 4f, -2f, 0f);
                 case DocumentField.SEXO:
-                    return new Tuple<float, float>(8f, 4f);
+                    return new Tuple<float, float, float, float>(8f, 4f, 0f, 0f);
                 case DocumentField.RACA:
-                    return new Tuple<float, float>(9.4f, 4f);
+                    return new Tuple<float, float, float, float>(9.4f, 4f, 0f, 0f);
                 case DocumentField.SINTOMAS:
-                    return new Tuple<float, float>(5.4f, 4f);
+                    return new Tuple<float, float, float, float>(5.4f, 4f, 0f, 0f);
                 case DocumentField.CONDICOES:
-                    return new Tuple<float, float>(12.0f, 5f);
+                    return new Tuple<float, float, float, float>(12.0f, 5f, 0f, 0f);
                 case DocumentField.ESTADO_TESTE:
-                    return new Tuple<float, float>(1.4f, 6f);
+                    return new Tuple<float, float, float, float>(1.4f, 6f, 0f, 0f);
                 case DocumentField.TIPO_TESTE:
-                    return new Tuple<float, float>(10f, 7f);
+                    return new Tuple<float, float, float, float>(7f, 8f, -1.9f, 0f);
                 case DocumentField.RESULTADO_TESTE:
-                    return new Tuple<float, float>(2f, 5f);
+                    return new Tuple<float, float, float, float>(2f, 5f, 0f, 0f);
                 case DocumentField.CLASSIFICACAO_FINAL:
-                    return new Tuple<float, float>(6f, 6f);
+                    return new Tuple<float, float, float, float>(6f, 6f, 0f, 0f);
                 case DocumentField.EVOLUCAO_CASO:
-                    return new Tuple<float, float>(5f, 6f);
+                    return new Tuple<float, float, float, float>(5f, 6f, 0f, 0f);
                 default:
                     break;
             }
-            return new Tuple<float, float>(1f, 1f);
+            return new Tuple<float, float, float, float>(1f, 1f, 0f, 0f);
         }
 
         public static Tuple<float, float, float, float> GetOptionsFieldDimension(OptionsField field)
@@ -366,21 +417,30 @@ namespace image_cloud_processor.Utils
                 case OptionsField.RESULTADO_TESTE_POSITIVO:
                 case OptionsField.RESULTADO_TESTE_NEGATIVO:
                     return new Tuple<float, float, float, float>(.6f, 1f, -0.6f, 0f);
-                //case OptionsField.CLASSIFICACAO_FINAL:
-                //    return new Tuple<float, float>(6f, 6f);
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_CRITERIO:
+                    return new Tuple<float, float, float, float>(.6f, 1.1f, -3f, 0f);
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_EPIDEMIOLOGICO:
+                    return new Tuple<float, float, float, float>(.3f, 1.1f, -1.6f, 0f);
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_IMAGEM:
+                    return new Tuple<float, float, float, float>(.7f, 1.1f, -3.2f, 0f);
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_LABORATORIAL:
+                    return new Tuple<float, float, float, float>(.4f, 1.1f, -1.4f, 0f);
+                case OptionsField.CLASSIFICACAO_FINAL_DESCARTADO:
+                    return new Tuple<float, float, float, float>(.5f, 1.1f, -0.5f, 0f);
+                case OptionsField.CLASSIFICACAO_FINAL_SINDROME_GRIPAL:
+                    return new Tuple<float, float, float, float>(.7f, 1.1f, -2.5f, 0f);
+
                 case OptionsField.EVOLUCAO_CASO_CANCELADO:
                     return new Tuple<float, float, float, float>(.5f, 1f, -0.5f, 0f);
                 case OptionsField.EVOLUCAO_CASO_CURA:
-                    return new Tuple<float, float, float, float>(.9f, 1f, -0.8f, 0f);
+                    return new Tuple<float, float, float, float>(1.0f, 1f, -1.0f, 0f);
                 case OptionsField.EVOLUCAO_CASO_IGNORADO:
-                    return new Tuple<float, float, float, float>(.4f, 1f, -0.4f, 0f);
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
                 case OptionsField.EVOLUCAO_CASO_INTERNADO:
                 case OptionsField.EVOLUCAO_CASO_OBITO:
-                    return new Tuple<float, float, float, float>(0.6f, 1f, -0.5f, 0f);
+                    return new Tuple<float, float, float, float>(0.8f, 1f, -0.8f, 0f);
                 case OptionsField.EVOLUCAO_CASO_TRATAMENTO:
-                    return new Tuple<float, float, float, float>(0.4f, 1f, -0.9f, 0f);
-                case OptionsField.EVOLUCAO_CASO_UTI:
-                    return new Tuple<float, float, float, float>(1.2f, 1f, -4f, 0f);
+                    return new Tuple<float, float, float, float>(0.4f, 1f, -2.0f, 0f);
                     //default:
                     //break;
             }

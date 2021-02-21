@@ -54,7 +54,7 @@ namespace ExtractTrainningData
                 var dimension = CropBoxes.GetFieldDimension(field);
 
                 string filenameFinal = Path.Combine(dstPath, field.ToString());
-                CropAndSaveImage(btm, item, filenameFinal, cropBoxes.GetBox(field), dimension.Item1, dimension.Item2);
+                CropAndSaveImage(btm, item, filenameFinal, cropBoxes.GetBox(field), dimension.Item1, dimension.Item2, dimension.Item3, dimension.Item4);
             }
         }
 

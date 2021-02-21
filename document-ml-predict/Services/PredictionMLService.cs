@@ -103,7 +103,7 @@ namespace image_cloud_processor.Service
             return path;
         }
 
-        public async Task PredictOptionsFieldsAsync(string id)
+        public async Task<Document> PredictOptionsFieldsAsync(string id)
         {
             var documento = _documentosRepository.ObterDocumento(id);
 
@@ -125,7 +125,7 @@ namespace image_cloud_processor.Service
                 }
             }
 
-            await _documentosRepository.AtualizarDocumentoAsync(documento);
+            return await _documentosRepository.AtualizarDocumentoAsync(documento);
         }
 
         private void UpdateOptionField(Document documento, OptionsField field, string prediction)
@@ -247,6 +247,30 @@ namespace image_cloud_processor.Service
                 case OptionsField.CONDICOES_IMUNOSSUPRESSAO:
                     documento.Condicoes = documento.Condicoes ?? new Condicoes { };
                     documento.Condicoes.Imunossupressao = selecao;
+                    break;
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_CRITERIO:
+                    documento.ClassificacaoFinal = documento.ClassificacaoFinal ?? new ClassificacaoFinal { };
+                    documento.ClassificacaoFinal.CofirmadoCriterioClinico = selecao;
+                    break;
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_EPIDEMIOLOGICO:
+                    documento.ClassificacaoFinal = documento.ClassificacaoFinal ?? new ClassificacaoFinal { };
+                    documento.ClassificacaoFinal.CofirmadoClinicoEpidemiologico = selecao;
+                    break;
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_IMAGEM:
+                    documento.ClassificacaoFinal = documento.ClassificacaoFinal ?? new ClassificacaoFinal { };
+                    documento.ClassificacaoFinal.CofirmadoClinicoImagem = selecao;
+                    break;
+                case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_LABORATORIAL:
+                    documento.ClassificacaoFinal = documento.ClassificacaoFinal ?? new ClassificacaoFinal { };
+                    documento.ClassificacaoFinal.CofirmadoLaboratorial = selecao;
+                    break;
+                case OptionsField.CLASSIFICACAO_FINAL_DESCARTADO:
+                    documento.ClassificacaoFinal = documento.ClassificacaoFinal ?? new ClassificacaoFinal { };
+                    documento.ClassificacaoFinal.Descartado = selecao;
+                    break;
+                case OptionsField.CLASSIFICACAO_FINAL_SINDROME_GRIPAL:
+                    documento.ClassificacaoFinal = documento.ClassificacaoFinal ?? new ClassificacaoFinal { };
+                    documento.ClassificacaoFinal.SindromeGripal = selecao;
                     break;
                 default:
                     break;
