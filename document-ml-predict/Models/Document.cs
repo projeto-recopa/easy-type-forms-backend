@@ -96,6 +96,8 @@ namespace image_cloud_processor.Models
         public Condicoes Condicoes { get; set; }
         public EvolucaoCaso EvolucaoCaso { get; set; }
         public ClassificacaoFinal ClassificacaoFinal { get; set; }
+        public EstadoTeste EstadoTeste { get; set; }
+        public TipoTeste TipoTeste { get; set; }
         // TODO: Pendente incluiro campos do formulário
         public string ResultadoTeste { get; set; }
     }

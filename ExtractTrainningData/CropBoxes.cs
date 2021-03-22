@@ -58,8 +58,11 @@ namespace ExtractTrainningData
         CONDICOES_IMUNOSSUPRESSAO,
         CONDICOES_DOENCAS_CARDIACAS,
         CONDICOES_GESTANTE,
-        //ESTADO_TESTE,
-        //TIPO_TESTE,
+        TIPO_TESTE_PCR,
+        TIPO_TESTE_ANTICORPO,
+        TIPO_TESTE_ANTIGENO,
+        TIPO_TESTE_ELISA,
+        TIPO_TESTE_ECLIA,
         RESULTADO_TESTE_POSITIVO,
         RESULTADO_TESTE_NEGATIVO,
         CLASSIFICACAO_FINAL_DESCARTADO,
@@ -75,6 +78,10 @@ namespace ExtractTrainningData
         EVOLUCAO_CASO_UTI,
         EVOLUCAO_CASO_OBITO,
         EVOLUCAO_CASO_CURA,
+        ESTADO_TESTE_SOLICITADO,
+        ESTADO_TESTE_COLETADO,
+        ESTADO_TESTE_CONCLUIDO,
+        ESTADO_TESTE_NAO_SOLICITADO
     }
     public class CropBoxes
     {
@@ -149,20 +156,20 @@ namespace ExtractTrainningData
                 if (lowrCaseWord.Contains("Condições")) return DocumentField.CONDICOES;
                 if (lowrCaseWord.ToLower().Contains("teste"))
                 {
-                    if (
-                        (!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("estado"))
-                        ||
-                        (!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("estado"))
-                        )
+                    if (lowrCaseWord.ToLower().Contains("estado"))
+                        //(!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("estado"))
+                        //||
+                        //(!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("estado"))
+                        //)
                     {
                         return DocumentField.ESTADO_TESTE;
                     }
 
-                    if (
-                        (!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("tipo"))
-                        ||
-                        (!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("tipo"))
-                        )
+                    if (lowrCaseWord.ToLower().Contains("tipo"))
+                        //(!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("tipo"))
+                        //||
+                        //(!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("tipo"))
+                        //)
                     {
                         return DocumentField.TIPO_TESTE;
                     }
@@ -273,6 +280,20 @@ namespace ExtractTrainningData
                         FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_DESCARTADO, this._boxes[item], GetFieldDimension(item));
                         FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_SINDROME_GRIPAL, this._boxes[item], GetFieldDimension(item));
                         break;
+
+                    case DocumentField.ESTADO_TESTE:
+                        FindContainedOption(OptionsField.ESTADO_TESTE_COLETADO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.ESTADO_TESTE_CONCLUIDO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.ESTADO_TESTE_NAO_SOLICITADO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.ESTADO_TESTE_SOLICITADO, this._boxes[item], GetFieldDimension(item));
+                        break;
+                    case DocumentField.TIPO_TESTE:
+                        FindContainedOption(OptionsField.TIPO_TESTE_ANTICORPO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TIPO_TESTE_ANTIGENO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TIPO_TESTE_ECLIA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TIPO_TESTE_ELISA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TIPO_TESTE_PCR, this._boxes[item], GetFieldDimension(item));
+                        break;
                     default: break;
                 }
             }
@@ -339,6 +360,15 @@ namespace ExtractTrainningData
                 case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_LABORATORIAL: return "laboratorial";
                 case OptionsField.CLASSIFICACAO_FINAL_DESCARTADO: return "descartado";
                 case OptionsField.CLASSIFICACAO_FINAL_SINDROME_GRIPAL: return "gripal";
+                case OptionsField.ESTADO_TESTE_COLETADO:return "coletado";
+                case OptionsField.ESTADO_TESTE_CONCLUIDO:return "concluído";
+                case OptionsField.ESTADO_TESTE_NAO_SOLICITADO:return "exame";
+                case OptionsField.ESTADO_TESTE_SOLICITADO:return "solicitado";
+                case OptionsField.TIPO_TESTE_ANTICORPO:return "anticorpo";
+                case OptionsField.TIPO_TESTE_ANTIGENO:return "antigeno";
+                case OptionsField.TIPO_TESTE_ECLIA:return "eclia";
+                case OptionsField.TIPO_TESTE_ELISA:return "elisa";
+                case OptionsField.TIPO_TESTE_PCR:return "pcr";
                 default: return string.Empty;
             }
 
@@ -397,7 +427,7 @@ namespace ExtractTrainningData
                 case DocumentField.CONDICOES:
                     return new Tuple<float, float, float, float>(12.0f, 5f, 0f, 0f);
                 case DocumentField.ESTADO_TESTE:
-                    return new Tuple<float, float, float, float>(1.4f, 6f, 0f, 0f);
+                    return new Tuple<float, float, float, float>(5f, 8f, -1.9f, 0f);
                 case DocumentField.TIPO_TESTE:
                     return new Tuple<float, float, float, float>(7f, 8f, -1.9f, 0f);
                 case DocumentField.RESULTADO_TESTE:
@@ -502,6 +532,24 @@ namespace ExtractTrainningData
                     return new Tuple<float, float, float, float>(0.4f, 1f, -2.0f, 0f);
                 case OptionsField.EVOLUCAO_CASO_UTI:
                     return new Tuple<float, float, float, float>(1.2f, 1f, -4f, 0f);
+                case OptionsField.ESTADO_TESTE_COLETADO:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                case OptionsField.ESTADO_TESTE_CONCLUIDO:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                case OptionsField.ESTADO_TESTE_NAO_SOLICITADO:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                case OptionsField.ESTADO_TESTE_SOLICITADO:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                case OptionsField.TIPO_TESTE_ANTICORPO:
+                    return new Tuple<float, float, float, float>(.5f, 1.2f, -2.1f, 0f);
+                case OptionsField.TIPO_TESTE_ANTIGENO:
+                    return new Tuple<float, float, float, float>(.6f, 1f, -2.3f, 0f);
+                case OptionsField.TIPO_TESTE_ECLIA:
+                    return new Tuple<float, float, float, float>(.8f, 1.2f, -5.4f, -1f);
+                case OptionsField.TIPO_TESTE_ELISA:
+                    return new Tuple<float, float, float, float>(.8f, 1.2f, -4.9f, 0f);
+                case OptionsField.TIPO_TESTE_PCR:
+                    return new Tuple<float, float, float, float>(1.2f, 1.2f, -2.7f, 0f);
                     //default:
                     //break;
             }

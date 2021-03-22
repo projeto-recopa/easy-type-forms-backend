@@ -59,8 +59,13 @@ namespace image_cloud_processor.Controllers
         {
             byte[] bytesInStream = this._downloadService.DownloadOptionsImage(id, field);
 
+            if(bytesInStream != null)
+            {
+
             var memory = new MemoryStream(bytesInStream);
             return File(memory,  "image/png", $"{id}.png");
+            }
+            return new NotFoundResult();
 
         }
 

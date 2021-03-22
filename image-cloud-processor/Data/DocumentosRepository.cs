@@ -101,6 +101,8 @@ namespace image_cloud_processor.Repository
                 // Manter dados privados
                 documento.CropedFields = original.CropedFields;
                 documento.DadosOriginais = original.DadosOriginais;
+                documento.EditedId = original.EditedId;
+                documento.AttachmentId = original.AttachmentId;
 
                 var filter = Builders<Document>.Filter.Eq("_id", MongoDB.Bson.ObjectId.Parse(documento?.Id));
 

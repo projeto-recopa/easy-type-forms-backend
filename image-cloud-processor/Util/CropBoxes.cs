@@ -79,20 +79,20 @@ namespace image_cloud_processor.Utils
                 if (lowrCaseWord.Contains("Condições")) return DocumentField.CONDICOES;
                 if (lowrCaseWord.ToLower().Contains("teste"))
                 {
-                    if (
-                        (!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("estado"))
-                        ||
-                        (!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("estado"))
-                        )
+                    if (lowrCaseWord.ToLower().Contains("estado"))
+                    //(!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("estado"))
+                    //||
+                    //(!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("estado"))
+                    //)
                     {
                         return DocumentField.ESTADO_TESTE;
                     }
 
-                    if (
-                        (!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("tipo"))
-                        ||
-                        (!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("tipo"))
-                        )
+                    if (lowrCaseWord.ToLower().Contains("tipo"))
+                    //(!string.IsNullOrEmpty(texton1) && texton1.ToLower().Contains("tipo"))
+                    //||
+                    //(!string.IsNullOrEmpty(texton2) && texton2.ToLower().Contains("tipo"))
+                    //)
                     {
                         return DocumentField.TIPO_TESTE;
                     }
@@ -210,6 +210,20 @@ namespace image_cloud_processor.Utils
                         FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_DESCARTADO, this._boxes[item], GetFieldDimension(item));
                         FindContainedOption(OptionsField.CLASSIFICACAO_FINAL_SINDROME_GRIPAL, this._boxes[item], GetFieldDimension(item));
                         break;
+
+                    case DocumentField.ESTADO_TESTE:
+                        FindContainedOption(OptionsField.ESTADO_TESTE_COLETADO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.ESTADO_TESTE_CONCLUIDO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.ESTADO_TESTE_NAO_SOLICITADO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.ESTADO_TESTE_SOLICITADO, this._boxes[item], GetFieldDimension(item));
+                        break;
+                    case DocumentField.TIPO_TESTE:
+                        FindContainedOption(OptionsField.TIPO_TESTE_ANTICORPO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TIPO_TESTE_ANTIGENO, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TIPO_TESTE_ECLIA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TIPO_TESTE_ELISA, this._boxes[item], GetFieldDimension(item));
+                        FindContainedOption(OptionsField.TIPO_TESTE_PCR, this._boxes[item], GetFieldDimension(item));
+                        break;
                     default: break;
                 }
             }
@@ -277,6 +291,15 @@ namespace image_cloud_processor.Utils
                 case OptionsField.CLASSIFICACAO_FINAL_CONFIRMADO_LABORATORIAL: return "laboratorial";
                 case OptionsField.CLASSIFICACAO_FINAL_DESCARTADO: return "descartado";
                 case OptionsField.CLASSIFICACAO_FINAL_SINDROME_GRIPAL: return "gripal";
+                case OptionsField.ESTADO_TESTE_COLETADO: return "coletado";
+                case OptionsField.ESTADO_TESTE_CONCLUIDO: return "concluído";
+                case OptionsField.ESTADO_TESTE_NAO_SOLICITADO: return "exame";
+                case OptionsField.ESTADO_TESTE_SOLICITADO: return "solicitado";
+                case OptionsField.TIPO_TESTE_ANTICORPO: return "anticorpo";
+                case OptionsField.TIPO_TESTE_ANTIGENO: return "antigeno";
+                case OptionsField.TIPO_TESTE_ECLIA: return "eclia";
+                case OptionsField.TIPO_TESTE_ELISA: return "elisa";
+                case OptionsField.TIPO_TESTE_PCR: return "pcr";
                 default: return string.Empty;
             }
 
@@ -333,7 +356,7 @@ namespace image_cloud_processor.Utils
                 case DocumentField.CONDICOES:
                     return new Tuple<float, float, float, float>(12.0f, 5f, 0f, 0f);
                 case DocumentField.ESTADO_TESTE:
-                    return new Tuple<float, float, float, float>(1.4f, 6f, 0f, 0f);
+                    return new Tuple<float, float, float, float>(5f, 8f, -1.9f, 0f);
                 case DocumentField.TIPO_TESTE:
                     return new Tuple<float, float, float, float>(7f, 8f, -1.9f, 0f);
                 case DocumentField.RESULTADO_TESTE:
@@ -359,9 +382,9 @@ namespace image_cloud_processor.Utils
                 case OptionsField.TEM_CPF_NAO:
                     return new Tuple<float, float, float, float>(1.3f, 1.4f, -1.3f, 0f);
                 case OptionsField.ESTRANGEIRO_SIM:
-                    return new Tuple<float, float, float, float>(1.1f, 1.4f, -1.5f, 0f);
+                    return new Tuple<float, float, float, float>(1.1f, 1.4f, -0.9f, 0f);
                 case OptionsField.ESTRANGEIRO_NAO:
-                    return new Tuple<float, float, float, float>(1.1f, 1.4f, -1.3f, 0f);
+                    return new Tuple<float, float, float, float>(1.1f, 1.4f, -0.9f, 0f);
                 case OptionsField.PROFISSIONAL_SAUDE_SIM:
                     return new Tuple<float, float, float, float>(1.3f, 1.4f, -1.5f, 0f);
                 case OptionsField.PROFISSIONAL_SAUDE_NAO:
@@ -435,12 +458,32 @@ namespace image_cloud_processor.Utils
                 case OptionsField.EVOLUCAO_CASO_CURA:
                     return new Tuple<float, float, float, float>(1.0f, 1f, -1.0f, 0f);
                 case OptionsField.EVOLUCAO_CASO_IGNORADO:
-                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                    return new Tuple<float, float, float, float>(.5f, 1f, -0.4f, 0f);
                 case OptionsField.EVOLUCAO_CASO_INTERNADO:
                 case OptionsField.EVOLUCAO_CASO_OBITO:
                     return new Tuple<float, float, float, float>(0.8f, 1f, -0.8f, 0f);
                 case OptionsField.EVOLUCAO_CASO_TRATAMENTO:
                     return new Tuple<float, float, float, float>(0.4f, 1f, -2.0f, 0f);
+                case OptionsField.ESTADO_TESTE_COLETADO:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                case OptionsField.ESTADO_TESTE_CONCLUIDO:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                case OptionsField.ESTADO_TESTE_NAO_SOLICITADO:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                case OptionsField.ESTADO_TESTE_SOLICITADO:
+                    return new Tuple<float, float, float, float>(.7f, 1f, -0.6f, 0f);
+                case OptionsField.TIPO_TESTE_ANTICORPO:
+                    return new Tuple<float, float, float, float>(.5f, 1.2f, -2.1f, 0f);
+                case OptionsField.TIPO_TESTE_ANTIGENO:
+                    return new Tuple<float, float, float, float>(.6f, 1f, -2.3f, 0f);
+                case OptionsField.TIPO_TESTE_ECLIA:
+                    return new Tuple<float, float, float, float>(.8f, 1.2f, -5.4f, -1f);
+                case OptionsField.TIPO_TESTE_ELISA:
+                    return new Tuple<float, float, float, float>(.8f, 1.2f, -4.9f, 0f);
+                case OptionsField.TIPO_TESTE_PCR:
+                    return new Tuple<float, float, float, float>(1.2f, 1.2f, -2.7f, 0f);
+ 
+
                     //default:
                     //break;
             }

@@ -272,6 +272,42 @@ namespace image_cloud_processor.Service
                     documento.ClassificacaoFinal = documento.ClassificacaoFinal ?? new ClassificacaoFinal { };
                     documento.ClassificacaoFinal.SindromeGripal = selecao;
                     break;
+                case OptionsField.TIPO_TESTE_ANTICORPO:
+                    documento.TipoTeste = documento.TipoTeste ?? new TipoTeste { };
+                    documento.TipoTeste.TesteRapidoAnticorpo = selecao;
+                    break;
+                case OptionsField.TIPO_TESTE_ANTIGENO:
+                    documento.TipoTeste = documento.TipoTeste ?? new TipoTeste { };
+                    documento.TipoTeste.TesteRapidoAntigeno = selecao;
+                    break;
+                case OptionsField.TIPO_TESTE_ECLIA:
+                    documento.TipoTeste = documento.TipoTeste ?? new TipoTeste { };
+                    documento.TipoTeste.ECLIA = selecao;
+                    break;
+                case OptionsField.TIPO_TESTE_ELISA:
+                    documento.TipoTeste = documento.TipoTeste ?? new TipoTeste { };
+                    documento.TipoTeste.ELISA = selecao;
+                    break;
+                case OptionsField.TIPO_TESTE_PCR:
+                    documento.TipoTeste = documento.TipoTeste ?? new TipoTeste { };
+                    documento.TipoTeste.RTPCR = selecao;
+                    break;
+                case OptionsField.ESTADO_TESTE_COLETADO:
+                    documento.EstadoTeste = documento.EstadoTeste ?? new EstadoTeste { };
+                    documento.EstadoTeste.Coletado = selecao;
+                    break;
+                case OptionsField.ESTADO_TESTE_CONCLUIDO:
+                    documento.EstadoTeste = documento.EstadoTeste ?? new EstadoTeste { };
+                    documento.EstadoTeste.Concluido = selecao;
+                    break;
+                case OptionsField.ESTADO_TESTE_NAO_SOLICITADO:
+                    documento.EstadoTeste = documento.EstadoTeste ?? new EstadoTeste { };
+                    documento.EstadoTeste.NaoSolicitado = selecao;
+                    break;
+                case OptionsField.ESTADO_TESTE_SOLICITADO:
+                    documento.EstadoTeste = documento.EstadoTeste ?? new EstadoTeste { };
+                    documento.EstadoTeste.Solicitado = selecao;
+                    break;
                 default:
                     break;
             }

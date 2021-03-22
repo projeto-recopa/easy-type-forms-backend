@@ -24,22 +24,13 @@ namespace image_cloud_processor.Service
     {
         private readonly ILogger<UploadService> _logger;
         private readonly IDocumentosRepository<Document> _documentosRepository;
-        private readonly ImageService _imageService;
-        //private readonly PredictionMLService _predictionMLService;
-        private readonly string PredictMLEndpoint;
         private static readonly HttpClient client = new HttpClient();
 
         public DownloadService(ILogger<UploadService> logger,
-            ImageService imageService,
-            //PredictionMLService predictionMLService, 
-            IConfiguration configuration,
             IDocumentosRepository<Document> documentosRepository)
         {
             _logger = logger;
-            //_predictionMLService = predictionMLService;
             _documentosRepository = documentosRepository;
-            _imageService = imageService;
-            PredictMLEndpoint = configuration.GetValue<string>("PredictSexoEndPoint");
         }
 
         public byte[] DownloadOptionsImage(string id, int field)
