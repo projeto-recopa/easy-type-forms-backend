@@ -1,4 +1,12 @@
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'  
   # Trigger analysis when pushing in master or pull requests, and when creating
   # a pull request. 
   push:
