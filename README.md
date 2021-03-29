@@ -1,9 +1,7 @@
 # Easy Typing Forms
-## Back-End
-
 
 <!-- TABLE OF CONTENTS -->
-<!-- <details open="open">
+<details open="open">
   <summary>Table of Contents</summary>
   <ol>
     <li>
@@ -13,13 +11,19 @@
         <a href="#pre-requisitos">Pré-Requisitos</a>
     </li>
     <li>
-        <a href="#pre-requisitos">Pré-Requisitos</a>
+        <a href="#configuracao">Configuração</a>
     </li>
     <li>
-        <a href="#pre-requisitos">Pré-Requisitos</a>
+        <a href="#configuracao-da-api-google-cloud">Configuração da API Google Cloud</a>
+    </li>
+    <li>
+        <a href="#build">Build</a>
+    </li>
+    <li>
+        <a href="#dockerhub">DockerHub</a>
     </li>
   </ol>
-</details> -->
+</details>
 
 
 <!-- ABOUT THE PROJECT -->

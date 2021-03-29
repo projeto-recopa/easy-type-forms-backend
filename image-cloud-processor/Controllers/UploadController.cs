@@ -20,6 +20,9 @@ using Microsoft.Net.Http.Headers;
 
 namespace image_cloud_processor.Controllers
 {
+    /// <summary>
+    /// Serviço responsável por realizar o Upload do documento e iniciar o processamento do formulário.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UploadController : ControllerBase

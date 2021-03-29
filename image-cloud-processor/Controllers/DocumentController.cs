@@ -16,6 +16,9 @@ using Microsoft.Extensions.Logging;
 
 namespace image_cloud_processor.Controllers
 {
+    /// <summary>
+    /// Endpoints relacionados ao ciclo de vida do documento.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class DocumentController : ControllerBase
