@@ -66,7 +66,6 @@ namespace image_cloud_processor
 
             services.AddTransient<DocumentService>();
             services.AddTransient<CloudImageProcessor>();
-            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
 
             services.AddGlobalExceptionHandlerMiddleware();
         }

@@ -31,7 +31,6 @@ namespace image_cloud_processor.Controllers
         private readonly DownloadService _downloadService;
 
         private readonly string[] _permittedExtensions = { ".png", ".jpeg", ".jpg" };
-        private readonly string _targetFilePath;
 
         // Get the default form options so that we can use them to set the default 
         // limits for request body data.
@@ -45,12 +44,6 @@ namespace image_cloud_processor.Controllers
             _downloadService = downloadService;
 
             _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
-
-            // To save physical files to a path provided by configuration:
-            _targetFilePath = config.GetValue<string>("StoredFilesPath");
-
-            // To save physical files to the temporary files folder, use:
-            //_targetFilePath = Path.GetTempPath();
         }
 
         // GET api/<DocumentController>/5

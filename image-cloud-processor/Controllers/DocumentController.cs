@@ -30,7 +30,11 @@ namespace image_cloud_processor.Controllers
             _documentService = documentService;
         }
 
-        // GET: api/<DocumentController>
+        /// <summary>
+        /// Lista os documentos de um deterninado status. Se nenhum parâmetro é passado retornar todos os documentos.
+        /// </summary>
+        /// <param name="status">Código do status</param>
+        /// <returns></returns>
         [HttpGet]
         public IEnumerable<Document> Get([FromQuery(Name = "status")] int status = -1)
         {
