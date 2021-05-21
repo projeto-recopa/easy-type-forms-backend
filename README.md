@@ -95,3 +95,12 @@ docker pull recopampes/document-ml-predict:latest
 ```
   docker pull recopampes/image-cloud-processor:latest
 ```
+## Docker Compose
+
+Na pasta Compose, foi disponibilizado o arquivo docker-compose.yaml.
+Nele está configurada toda a aplicação para ser publicada a partidar das imagens disponibilizadas no docker hub. Para iniciar basta usar o comando
+```
+> docker compose up
+```
+
+Obs: Uma pasta com o nome data deve ser criada para persistir os dados do mongoDB enquanto a aplicação está em execução.

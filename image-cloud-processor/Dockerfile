@@ -3,7 +3,7 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 RUN apt-get update && apt-get install -y libgdiplus
 
-ENV PredictEndPoint="https://recopa-pred-api.azurewebsites.net/Predict/"
+#ENV PredictEndPoint="https://recopa-pred-api.azurewebsites.net/Predict/"
 
 WORKDIR /app
 EXPOSE 80
